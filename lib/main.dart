@@ -8,6 +8,8 @@ void main() async {
 
   WindowOptions windowOptions = const WindowOptions(
     size: Size(600, 400),
+    minimumSize: Size(600, 400),
+    maximumSize: Size(600, 400),
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
@@ -36,15 +38,16 @@ class MainApp extends StatelessWidget {
         colorScheme: ShadStoneColorScheme.dark(),
       ),
       home: Scaffold(
-        body: Center(
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 10,
                 children: [
-                  SizedBox(width: 20),
                   Text("Preset Chooser"),
                   SizedBox(width: 100, child: ShadInput()),
                   ShadButton(child: Text("Change Preset"),)
@@ -67,8 +70,6 @@ class SendReceiveTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShadTabs<String>(
       value: 'send',
-      tabBarConstraints: const BoxConstraints(maxWidth: 400),
-      contentConstraints: const BoxConstraints(maxWidth: 400),
       tabs: [
         ShadTab(
           value: 'send',
