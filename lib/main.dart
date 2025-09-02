@@ -42,11 +42,12 @@ class MainApp extends StatelessWidget {
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
+                spacing: 10,
                 children: [
                   SizedBox(width: 20),
                   Text("Preset Chooser"),
-                  SizedBox(width: 10),
                   SizedBox(width: 100, child: ShadInput()),
+                  ShadButton(child: Text("Change Preset"),)
                 ],
               ),
               SizedBox(height: 10),
