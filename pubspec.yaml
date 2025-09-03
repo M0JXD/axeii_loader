@@ -7,8 +7,11 @@ environment:
   sdk: ^3.9.0
 
 dependencies:
+  file_picker: ^10.3.2
   flutter:
     sdk: flutter
+  flutter_midi_command: ^0.5.3
+  provider: ^6.1.5+1
   shadcn_ui: ^0.29.4
   window_manager: ^0.5.1
 
