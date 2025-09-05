@@ -8,8 +8,8 @@ void main() async {
 
   WindowOptions windowOptions = const WindowOptions(
     size: Size(600, 400),
-    minimumSize: Size(600, 400),
-    maximumSize: Size(600, 400),
+    minimumSize: Size(600, 600),
+    maximumSize: Size(600, 600),
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
@@ -31,11 +31,11 @@ class MainApp extends StatelessWidget {
     return ShadApp(
       theme: ShadThemeData(
         brightness: Brightness.light,
-        colorScheme: ShadStoneColorScheme.light(),
+        colorScheme: ShadZincColorScheme.light(),
       ),
       darkTheme: ShadThemeData(
         brightness: Brightness.dark,
-        colorScheme: ShadStoneColorScheme.dark(),
+        colorScheme: ShadZincColorScheme.dark(),
       ),
       home: Scaffold(
         body: Padding(
@@ -46,34 +46,77 @@ class MainApp extends StatelessWidget {
             children: [
               Text("Connection Settings (Device type, MIDI Ports...)"),
               SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                spacing: 10,
-                children: [
-                  
-                  Text("Preset Chooser"),
-                  
-                  SizedBox(width: 85, height: 40, child: ShadInput()),
-                  Column(
-                    spacing: 2,
-                    children: [
-                      ShadButton(height: 30, child: Icon(LucideIcons.arrowUp)),
-                      ShadButton(
-                        height: 30,
-                        child: Icon(LucideIcons.arrowDown),
-                      ),
-                    ],
-                  ),
-                  ShadButton(child: Text("Change Preset")),
-                ],
-              ),
-              Text("IR Settings, User Location # or Scratchpad"),
+              PresetSettings(),
+
+              IRSettings(),
               SizedBox(height: 10),
               SendReceiveTabs(),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class PresetSettings extends StatelessWidget {
+  const PresetSettings({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Preset Chooser"),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          spacing: 10,
+          children: [
+            SizedBox(width: 85, height: 40, child: ShadInput()),
+            Column(
+              spacing: 2,
+              children: [
+                ShadButton(height: 30, child: Icon(LucideIcons.arrowUp)),
+                ShadButton(height: 30, child: Icon(LucideIcons.arrowDown)),
+              ],
+            ),
+            ShadButton(child: Text("Change Preset")),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class IRSettings extends StatelessWidget {
+  const IRSettings({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("IR Settings, User Location # or Scratchpad"),
+        Row(
+          children: [
+            ShadRadioGroup<String>(
+              items: [
+                ShadRadio(label: Text('User Location'), value: 'user'),
+                ShadRadio(
+                  label: Text('Scratchpad Location'),
+                  value: 'scratchpad',
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                ShadButton.secondary(child: Text("UserLoc")),
+                ShadButton.secondary(child: Text("ScratchLoc")),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -90,7 +133,7 @@ class SendReceiveTabs extends StatelessWidget {
           value: 'send',
           content: ShadCard(
             description: const Text("Send files to your Axe-FX II"),
-            footer: const ShadButton(child: Text('Send to Axe-FX II')),
+            footer: const ShadButton(enabled: false,child: Text('Send to Axe-FX II'),),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
