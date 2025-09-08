@@ -40,7 +40,6 @@ class MainApp extends StatelessWidget {
               Text("Connection Settings (Device type, MIDI Ports...)"),
               SizedBox(height: 10),
               PresetSettings(),
-
               IRSettings(),
               SizedBox(height: 10),
               SendReceiveTabs(),
@@ -134,17 +133,17 @@ class IRSettings extends StatelessWidget {
 }
 
 class SendReceiveTabs extends StatelessWidget {
-  SendReceiveTabs({super.key});
-  // final TabController tabController = TabController(length: 2, vsync: this);
+  const SendReceiveTabs({super.key});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: SizedBox(
-        height: 320,
-        width: 550,
+        height: 200,
+        width: 580,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             TabBar(
               tabs: [
@@ -153,7 +152,7 @@ class SendReceiveTabs extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: 260,
+              height: 150,
               child: TabBarView(
                 children: [
                   Card(
