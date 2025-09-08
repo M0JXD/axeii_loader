@@ -152,57 +152,38 @@ class SendReceiveTabs extends StatelessWidget {
                 Tab(child: Text("Receive")),
               ],
             ),
-            SizedBox(height: 260, child: TabBarView(children: [Card(), Card()])),
+            SizedBox(
+              height: 260,
+              child: TabBarView(
+                children: [
+                  Card(
+                    child: Column(
+                      children: [
+                        Text("Send files to your Axe-FX II"),
+                        TextField(),
+                        ElevatedButton(
+                          onPressed: () {},
+                          child: Text('Send to Axe-FX II'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Card(                    child: Column(
+                      children: [
+                        Text("Get files from your Axe-FX II"),
+                        TextField(),
+                        ElevatedButton(
+                          onPressed: () {},
+                          child: Text('Get from Axe-FX II'),
+                        ),
+                      ],
+                    ),),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
-
-    // ShadTabs<String>(
-    //   value: 'send',
-    //   tabs: [
-    //     ShadTab(
-    //       value: 'send',
-    //       content: ShadCard(
-    //         description: const Text("Send files to your Axe-FX II"),
-    //         footer: const ShadButton(
-    //           enabled: false,
-    //           child: Text('Send to Axe-FX II'),
-    //         ),
-    //         child: Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: [
-    //             const SizedBox(height: 16),
-    //             ShadInputFormField(
-    //               label: const Text('File to Send'),
-    //               initialValue: 'MyAwesomePreset.syx',
-    //             ),
-    //             const SizedBox(height: 16),
-    //           ],
-    //         ),
-    //       ),
-    //       child: const Text('Send Mode'),
-    //     ),
-    //     ShadTab(
-    //       value: 'receive',
-    //       content: ShadCard(
-    //         description: const Text("Get presets and IR's from your Axe-FX II"),
-    //         footer: const ShadButton(child: Text('Get from Axe-FX II')),
-    //         child: Column(
-    //           children: [
-    //             const SizedBox(height: 16),
-    //             ShadInputFormField(
-    //               label: const Text('Where to Save and What to get'),
-    //               initialValue: '~/AxeFxII',
-    //             ),
-    //             const SizedBox(height: 16),
-    //           ],
-    //         ),
-    //       ),
-    //       child: const Text('Receive Mode'),
-    //     ),
-    //   ],
-    // );
   }
 }
