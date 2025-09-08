@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -28,15 +27,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShadApp(
-      theme: ShadThemeData(
-        brightness: Brightness.light,
-        colorScheme: ShadZincColorScheme.light(),
-      ),
-      darkTheme: ShadThemeData(
-        brightness: Brightness.dark,
-        colorScheme: ShadZincColorScheme.dark(),
-      ),
+    return MaterialApp(
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       home: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -72,21 +65,29 @@ class PresetSettings extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           spacing: 10,
           children: [
-            SizedBox(width: 85, height: 40, child: ShadInput()),
+            SizedBox(width: 85, height: 40, child: TextField()),
             Column(
               spacing: 2,
               children: [
-                ShadButton(height: 30, child: Icon(LucideIcons.arrowUp)),
-                ShadButton(height: 30, child: Icon(LucideIcons.arrowDown)),
+                FilledButton(
+                  child: Icon(Icons.arrow_upward_rounded),
+                  onPressed: () {},
+                ),
+                FilledButton(
+                  child: Icon(Icons.arrow_downward_rounded),
+                  onPressed: () {},
+                ),
               ],
             ),
-            ShadButton(child: Text("Change Preset")),
+            FilledButton(onPressed: () {}, child: Text("Change Preset")),
           ],
         ),
       ],
     );
   }
 }
+
+enum CabinetLocation { userLocation, scratchpadLocation }
 
 class IRSettings extends StatelessWidget {
   const IRSettings({super.key});
@@ -99,19 +100,30 @@ class IRSettings extends StatelessWidget {
         Text("IR Settings, User Location # or Scratchpad"),
         Row(
           children: [
-            ShadRadioGroup<String>(
-              items: [
-                ShadRadio(label: Text('User Location'), value: 'user'),
-                ShadRadio(
-                  label: Text('Scratchpad Location'),
-                  value: 'scratchpad',
+            SizedBox(
+              width: 300,
+              height: 100,
+              child: RadioGroup(
+                onChanged: (value) {},
+                child: Column(
+                  children: [
+                    RadioListTile<CabinetLocation>(
+                      value: CabinetLocation.userLocation,
+                      title: Text("User Location"),
+                    ),
+                    RadioListTile<CabinetLocation>(
+                      value: CabinetLocation.userLocation,
+                      title: Text("Scratchpad Location"),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
+
             Column(
               children: [
-                ShadButton.secondary(child: Text("UserLoc")),
-                ShadButton.secondary(child: Text("ScratchLoc")),
+                FilledButton(onPressed: () {}, child: Text("UserLoc")),
+                FilledButton(onPressed: () {}, child: Text("ScratchLoc")),
               ],
             ),
           ],
@@ -122,52 +134,75 @@ class IRSettings extends StatelessWidget {
 }
 
 class SendReceiveTabs extends StatelessWidget {
-  const SendReceiveTabs({super.key});
+  SendReceiveTabs({super.key});
+  // final TabController tabController = TabController(length: 2, vsync: this);
 
   @override
   Widget build(BuildContext context) {
-    return ShadTabs<String>(
-      value: 'send',
-      tabs: [
-        ShadTab(
-          value: 'send',
-          content: ShadCard(
-            description: const Text("Send files to your Axe-FX II"),
-            footer: const ShadButton(enabled: false,child: Text('Send to Axe-FX II'),),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                ShadInputFormField(
-                  label: const Text('File to Send'),
-                  initialValue: 'MyAwesomePreset.syx',
-                ),
-                const SizedBox(height: 16),
+    return DefaultTabController(
+      length: 2,
+      child: SizedBox(
+        height: 320,
+        width: 550,
+        child: Column(
+          children: [
+            TabBar(
+              tabs: [
+                Tab(child: Text("Send")),
+                Tab(child: Text("Receive")),
               ],
             ),
-          ),
-          child: const Text('Send Mode'),
+            SizedBox(height: 260, child: TabBarView(children: [Card(), Card()])),
+          ],
         ),
-        ShadTab(
-          value: 'receive',
-          content: ShadCard(
-            description: const Text("Get presets and IR's from your Axe-FX II"),
-            footer: const ShadButton(child: Text('Get from Axe-FX II')),
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                ShadInputFormField(
-                  label: const Text('Where to Save and What to get'),
-                  initialValue: '~/AxeFxII',
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
-          child: const Text('Receive Mode'),
-        ),
-      ],
+      ),
     );
+
+    // ShadTabs<String>(
+    //   value: 'send',
+    //   tabs: [
+    //     ShadTab(
+    //       value: 'send',
+    //       content: ShadCard(
+    //         description: const Text("Send files to your Axe-FX II"),
+    //         footer: const ShadButton(
+    //           enabled: false,
+    //           child: Text('Send to Axe-FX II'),
+    //         ),
+    //         child: Column(
+    //           mainAxisSize: MainAxisSize.min,
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             const SizedBox(height: 16),
+    //             ShadInputFormField(
+    //               label: const Text('File to Send'),
+    //               initialValue: 'MyAwesomePreset.syx',
+    //             ),
+    //             const SizedBox(height: 16),
+    //           ],
+    //         ),
+    //       ),
+    //       child: const Text('Send Mode'),
+    //     ),
+    //     ShadTab(
+    //       value: 'receive',
+    //       content: ShadCard(
+    //         description: const Text("Get presets and IR's from your Axe-FX II"),
+    //         footer: const ShadButton(child: Text('Get from Axe-FX II')),
+    //         child: Column(
+    //           children: [
+    //             const SizedBox(height: 16),
+    //             ShadInputFormField(
+    //               label: const Text('Where to Save and What to get'),
+    //               initialValue: '~/AxeFxII',
+    //             ),
+    //             const SizedBox(height: 16),
+    //           ],
+    //         ),
+    //       ),
+    //       child: const Text('Receive Mode'),
+    //     ),
+    //   ],
+    // );
   }
 }
