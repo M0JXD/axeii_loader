@@ -5,9 +5,7 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-
   WindowOptions windowOptions = const WindowOptions(
-    size: Size(600, 400),
     minimumSize: Size(600, 600),
     maximumSize: Size(600, 600),
     center: true,
@@ -155,12 +153,12 @@ class SendReceiveTabs extends StatelessWidget {
         children: [
           TabBar(
             tabs: [
-              Tab(child: Text("Send")),
-              Tab(child: Text("Receive")),
+              Tab(child: Text("Send Mode")),
+              Tab(child: Text("Receive Mode")),
             ],
           ),
           SizedBox(
-            height: 200,
+            height: 308,
             child: TabBarView(
               children: [
                 Card(
