@@ -29,8 +29,14 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: FlexThemeData.light(scheme: FlexScheme.shadZinc),
-      darkTheme:  FlexThemeData.dark(scheme: FlexScheme.shadZinc),
+      theme: FlexThemeData.light(
+        scheme: FlexScheme.shadZinc,
+        subThemesData: FlexSubThemesData(filledButtonRadius: 10),
+      ),
+      darkTheme: FlexThemeData.dark(
+        scheme: FlexScheme.shadZinc,
+        subThemesData: FlexSubThemesData(filledButtonRadius: 10),
+      ),
       home: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -93,7 +99,7 @@ class IRSettings extends StatefulWidget {
 }
 
 class _IRSettingsState extends State<IRSettings> {
-  int? _cabLocation;  // Enum refused to work?
+  int? _cabLocation; // Enum refused to work?
 
   @override
   Widget build(BuildContext context) {
