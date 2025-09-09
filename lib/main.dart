@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -28,8 +29,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: FlexThemeData.light(scheme: FlexScheme.shadZinc),
+      darkTheme:  FlexThemeData.dark(scheme: FlexScheme.shadZinc),
       home: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -38,10 +39,8 @@ class MainApp extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("Connection Settings (Device type, MIDI Ports...)"),
-              SizedBox(height: 10),
               PresetSettings(),
               IRSettings(),
-              SizedBox(height: 10),
               SendReceiveTabs(),
             ],
           ),
@@ -113,7 +112,7 @@ class _IRSettingsState extends State<IRSettings> {
               },
               child: SizedBox(
                 width: 300,
-                height: 100,
+                height: 96,
                 child: const Column(
                   children: <Widget>[
                     RadioListTile<int>(value: 0, title: Text("User Location")),
@@ -145,51 +144,47 @@ class SendReceiveTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: SizedBox(
-        height: 200,
-        width: 580,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TabBar(
-              tabs: [
-                Tab(child: Text("Send")),
-                Tab(child: Text("Receive")),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          TabBar(
+            tabs: [
+              Tab(child: Text("Send")),
+              Tab(child: Text("Receive")),
+            ],
+          ),
+          SizedBox(
+            height: 200,
+            child: TabBarView(
+              children: [
+                Card(
+                  child: Column(
+                    children: [
+                      Text("Send files to your Axe-FX II"),
+                      TextField(),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: Text('Send to Axe-FX II'),
+                      ),
+                    ],
+                  ),
+                ),
+                Card(
+                  child: Column(
+                    children: [
+                      Text("Get files from your Axe-FX II"),
+                      TextField(),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: Text('Get from Axe-FX II'),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-            SizedBox(
-              height: 150,
-              child: TabBarView(
-                children: [
-                  Card(
-                    child: Column(
-                      children: [
-                        Text("Send files to your Axe-FX II"),
-                        TextField(),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Send to Axe-FX II'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Card(
-                    child: Column(
-                      children: [
-                        Text("Get files from your Axe-FX II"),
-                        TextField(),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Get from Axe-FX II'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
