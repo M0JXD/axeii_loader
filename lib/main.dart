@@ -162,7 +162,7 @@ class SendReceiveTabs extends StatelessWidget {
                     children: [
                       Text("Send files to your Axe-FX II"),
                       TextField(),
-                      ElevatedButton(
+                      FilledButton(
                         onPressed: () {},
                         child: Text('Send to Axe-FX II'),
                       ),
@@ -174,7 +174,7 @@ class SendReceiveTabs extends StatelessWidget {
                     children: [
                       Text("Get files from your Axe-FX II"),
                       TextField(),
-                      ElevatedButton(
+                      FilledButton(
                         onPressed: () {},
                         child: Text('Get from Axe-FX II'),
                       ),
