@@ -86,10 +86,15 @@ class PresetSettings extends StatelessWidget {
   }
 }
 
-enum CabinetLocation { userLocation, scratchpadLocation }
-
-class IRSettings extends StatelessWidget {
+class IRSettings extends StatefulWidget {
   const IRSettings({super.key});
+
+  @override
+  State<IRSettings> createState() => _IRSettingsState();
+}
+
+class _IRSettingsState extends State<IRSettings> {
+  int? _cabLocation;  // Enum refused to work?
 
   @override
   Widget build(BuildContext context) {
@@ -99,26 +104,27 @@ class IRSettings extends StatelessWidget {
         Text("IR Settings, User Location # or Scratchpad"),
         Row(
           children: [
-            SizedBox(
-              width: 300,
-              height: 100,
-              child: RadioGroup(
-                onChanged: (value) {},
-                child: Column(
-                  children: [
-                    RadioListTile<CabinetLocation>(
-                      value: CabinetLocation.userLocation,
-                      title: Text("User Location"),
-                    ),
-                    RadioListTile<CabinetLocation>(
-                      value: CabinetLocation.userLocation,
+            RadioGroup<int>(
+              groupValue: _cabLocation,
+              onChanged: (int? value) {
+                setState(() {
+                  _cabLocation = value;
+                });
+              },
+              child: SizedBox(
+                width: 300,
+                height: 100,
+                child: const Column(
+                  children: <Widget>[
+                    RadioListTile<int>(value: 0, title: Text("User Location")),
+                    RadioListTile<int>(
+                      value: 1,
                       title: Text("Scratchpad Location"),
                     ),
                   ],
                 ),
               ),
             ),
-
             Column(
               children: [
                 FilledButton(onPressed: () {}, child: Text("UserLoc")),
@@ -167,7 +173,8 @@ class SendReceiveTabs extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Card(                    child: Column(
+                  Card(
+                    child: Column(
                       children: [
                         Text("Get files from your Axe-FX II"),
                         TextField(),
@@ -176,7 +183,8 @@ class SendReceiveTabs extends StatelessWidget {
                           child: Text('Get from Axe-FX II'),
                         ),
                       ],
-                    ),),
+                    ),
+                  ),
                 ],
               ),
             ),
