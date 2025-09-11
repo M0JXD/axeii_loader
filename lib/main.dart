@@ -118,32 +118,42 @@ class ConnectionSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Connection Settings:"),
-        DropdownMenu(
-          dropdownMenuEntries: [
-            DropdownMenuEntry(value: 0, label: "Axe-FX II MK I/II"),
-            DropdownMenuEntry(value: 1, label: "Axe-FX II XL"),
-            DropdownMenuEntry(value: 2, label: "Axe-FX II XL+ "),
-          ],
-        ),
-        DropdownMenu(
-          dropdownMenuEntries: [
-            DropdownMenuEntry(value: 0, label: "MIDI IN PORT1"),
-            DropdownMenuEntry(value: 1, label: "MIDI IN PORT2"),
-            DropdownMenuEntry(value: 2, label: "MIDI IN PORT3"),
-          ],
-        ),
-        DropdownMenu(
-          dropdownMenuEntries: [
-            DropdownMenuEntry(value: 0, label: "MIDI OUT PORT1"),
-            DropdownMenuEntry(value: 1, label: "MIDI OUT PORT2"),
-            DropdownMenuEntry(value: 2, label: "MIDI OUT PORT3"),
-          ],
-        ),
-      ],
+    return SizedBox(
+      width: 200,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 10,
+        children: [
+          const Text("Connection Settings:"),
+          DropdownMenu(
+            width: 200,
+            hintText: "Model",
+            dropdownMenuEntries: [
+              DropdownMenuEntry(value: 0, label: "Axe-FX II MK I/II"),
+              DropdownMenuEntry(value: 1, label: "Axe-FX II XL"),
+              DropdownMenuEntry(value: 2, label: "Axe-FX II XL+ "),
+            ],
+          ),
+          DropdownMenu(
+            width: 200,
+            hintText: "MIDI Input Port",
+            dropdownMenuEntries: [
+              DropdownMenuEntry(value: 0, label: "MIDI IN PORT1"),
+              DropdownMenuEntry(value: 1, label: "MIDI IN PORT2"),
+              DropdownMenuEntry(value: 2, label: "MIDI IN PORT3"),
+            ],
+          ),
+          DropdownMenu(
+            width: 200,
+            hintText: "MIDI Output Port",
+            dropdownMenuEntries: [
+              DropdownMenuEntry(value: 0, label: "MIDI OUT PORT1"),
+              DropdownMenuEntry(value: 1, label: "MIDI OUT PORT2"),
+              DropdownMenuEntry(value: 2, label: "MIDI OUT PORT3"),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
