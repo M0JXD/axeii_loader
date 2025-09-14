@@ -1,6 +1,8 @@
-import 'package:axeii_loader/model/model.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:axeii_loader/model/model.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:provider/provider.dart';
 
@@ -114,9 +116,7 @@ class SendReceiveActions extends StatelessWidget {
           context.watch<AxeLoaderModel>().sendReceiveMode,
         },
         onSelectionChanged: (Set<SendReceiveMode> newSelection) {
-          context.read<AxeLoaderModel>().changeSendReceiveMode(
-            newSelection.first,
-          );
+          context.read<AxeLoaderModel>().sendReceiveMode = newSelection.first;
         },
       ),
     );
@@ -153,7 +153,7 @@ class ConnectionSettings extends StatelessWidget {
               ),
             ],
             onSelected: (value) {
-              context.read<AxeLoaderModel>().changeUnitType(value!);
+              context.read<AxeLoaderModel>().axeFXType = value!;
             },
           ),
           DropdownMenu(
@@ -186,7 +186,24 @@ class LocationChooser extends StatelessWidget {
           spacing: 10,
           children: [
             Expanded(child: TextField()),
-            FilledButton(onPressed: () {}, child: Text("Browse")),
+            FilledButton(
+              onPressed: () async {
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  allowedExtensions: ['syx'],
+                  type: FileType.custom,
+                );
+
+                if (result != null) {
+                  File file = File(result.files.single.path!);
+                  if (context.mounted) {
+                    context.read<AxeLoaderModel>().fileLocation = file.path;
+                  }
+                } else {
+                  // User canceled the picker
+                }
+              },
+              child: Text("Browse"),
+            ),
           ],
         ),
       ],
@@ -266,7 +283,7 @@ class IRSettings extends StatelessWidget {
         RadioGroup<CabLocation>(
           groupValue: context.watch<AxeLoaderModel>().cabLocation,
           onChanged: (CabLocation? value) {
-            context.read<AxeLoaderModel>().changeCabLocation(value!);
+            context.read<AxeLoaderModel>().cabLocation = value!;
           },
           child: SizedBox(
             width: 170,
