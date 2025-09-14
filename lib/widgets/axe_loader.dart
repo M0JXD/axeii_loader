@@ -78,7 +78,7 @@ class AxeLoaderBody extends StatelessWidget {
                       ),
                       Divider(),
                       // Spacer(),
-                      Expanded(child: Center(child: SelectorArea())),
+                      Expanded(child: Center(child: TransferSettings())),
                     ],
                   ),
                 ),
@@ -208,6 +208,7 @@ class LocationChooser extends StatelessWidget {
                         .pickFiles(
                           allowedExtensions: ['syx'],
                           type: FileType.custom,
+                          dialogTitle: "Choose file...",
                         );
                     if (result != null && context.mounted) {
                       File file = File(result.files.single.path!);
@@ -215,7 +216,7 @@ class LocationChooser extends StatelessWidget {
                     }
                   } else {
                     String? selectedDirectory = await FilePicker.platform
-                        .getDirectoryPath();
+                        .getDirectoryPath(dialogTitle: "Choose Directory...");
                     if (context.mounted && selectedDirectory != null) {
                       context.read<AxeLoaderModel>().fileLocation =
                           selectedDirectory;
@@ -232,8 +233,8 @@ class LocationChooser extends StatelessWidget {
   }
 }
 
-class SelectorArea extends StatelessWidget {
-  const SelectorArea({super.key});
+class TransferSettings extends StatelessWidget {
+  const TransferSettings({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +280,11 @@ class PresetSettings extends StatelessWidget {
           spacing: 10,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(type == AxeFileType.ir ? "IR File Detected" : "Preset File Detected"),
+            Text(
+              type == AxeFileType.ir
+                  ? "IR File Detected"
+                  : "Preset File Detected",
+            ),
             Text("Preset Selector:"),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -353,7 +358,7 @@ class ActionProgress extends StatelessWidget {
           ? true
           : false;
     }
-    
+
     return Row(
       spacing: 10,
       children: [
@@ -365,7 +370,7 @@ class ActionProgress extends StatelessWidget {
                   var mode = context.read<AxeLoaderModel>().sendReceiveMode;
 
                   MidiCommand midiCommand = MidiCommand();
-                  AxeController(midiCommand, context).changePreset(1);
+                  AxeController(midiCommand, context).uploadPreset("");
                   // midiCommand.connectToDevice();
                 },
           child: Text("Begin"),

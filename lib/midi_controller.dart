@@ -8,7 +8,6 @@ import 'package:flutter_midi_command/flutter_midi_command.dart';
 import 'package:provider/provider.dart';
 
 Future<AxeFileType?> typeDetector(String pathToFile) async {
-
   AxeFileType? type;
   var file = File(pathToFile);
   var fileAsBytes = await file.readAsBytes();
@@ -29,12 +28,10 @@ class AxeController {
 
   AxeController(this._midiDevice, this.context);
 
-  void changePreset(int presetNumber) {
-
-  }
+  void changePreset(int presetNumber) {}
 
   void uploadPreset(String pathToPreset) async {
-        context.read<AxeLoaderModel>().transactionProgress = 0;
+    context.read<AxeLoaderModel>().transactionProgress = 0;
     if (context.mounted) {
       for (
         ;
