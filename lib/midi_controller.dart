@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 Future<AxeFileType?> typeDetector(String pathToFile) async {
 
-  AxeFileType? type = null;
+  AxeFileType? type;
   var file = File(pathToFile);
   var fileAsBytes = await file.readAsBytes();
   // A preset file's 6th byte should be 0x77

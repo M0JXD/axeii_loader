@@ -353,7 +353,7 @@ class ActionProgress extends StatelessWidget {
           ? true
           : false;
     }
-
+    
     return Row(
       spacing: 10,
       children: [
