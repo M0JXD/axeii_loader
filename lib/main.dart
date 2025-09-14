@@ -10,7 +10,7 @@ void main() async {
   await setupWindow();
   runApp(
     ChangeNotifierProvider(
-      create: (_) => AxeLoaderModel(),
+      create: (context) => AxeLoaderModel(),
       child: AxeLoaderApp(),
     ),
   );
@@ -21,9 +21,9 @@ Future<void> setupWindow() async {
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = const WindowOptions(
-      size: Size(640, 480),
-      minimumSize: Size(620, 400),
-      maximumSize: Size(800, 600),
+      size: Size(600, 400),
+      minimumSize: Size(600, 400),
+      maximumSize: Size(600, 400),
       center: true,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
