@@ -1,15 +1,14 @@
 // Contains utility functions for MIDI actions on the Axe-FX II
 
+import 'package:axeii_loader/model/model.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
-
-enum AxeFXType { original, xl, xlPlus }
 
 class AxeController {
 
-  AxeFXType _type;
+  AxeFXType axeFXType = AxeFXType.original;
   MidiCommand _midiDevice;
 
-  AxeController(this._midiDevice,  this._type);
+  AxeController(this._midiDevice, this.axeFXType);
 
   void changePreset(int presetNumber) {
     
@@ -33,4 +32,4 @@ class AxeController {
 
 }
 
-
+// AxeController axeConnection = AxeController();
