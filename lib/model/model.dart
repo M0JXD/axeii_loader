@@ -9,10 +9,12 @@ class AxeLoaderModel extends ChangeNotifier {
   SendReceiveMode _sendReceiveMode = SendReceiveMode.send;
   AxeFXType _axeFXType = AxeFXType.original;
   CabLocation _cabLocation = CabLocation.user;
+  String _fileLocation = "";
 
   SendReceiveMode get sendReceiveMode => _sendReceiveMode;
   AxeFXType get axeFXType => _axeFXType;
   CabLocation get cabLocation => _cabLocation;
+  String? get fileLocation => _fileLocation.contains(".syx") ? _fileLocation : null;
 
   void changeSendReceiveMode(SendReceiveMode newMode) {
     _sendReceiveMode = newMode;

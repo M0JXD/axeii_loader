@@ -47,36 +47,43 @@ class AxeLoaderBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.all(10.0),
       child: Column(
         spacing: 10,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            spacing: 10,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ConnectionSettings(),
-              SizedBox(height: 220, child: VerticalDivider()),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 10,
-                  children: [
-                    SelectorArea(),
-                    Divider(),
-                    LocationChooser(locationType: "Location"),
-                  ],
+          Expanded(
+            child: Row(
+              spacing: 10,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ConnectionSettings(),
+                VerticalDivider(),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 10,
+                    children: [
+                      LocationChooser(
+                        locationType:
+                            (context.watch<AxeLoaderModel>().sendReceiveMode ==
+                                SendReceiveMode.send)
+                            ? "Select a file to send:"
+                            : "Choose a location to save:",
+                      ),
+                      Divider(),
+                      // Spacer(),
+                      Expanded(child: Center(child: SelectorArea())),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           Divider(),
-          Expanded(child: SizedBox()),
           ActionProgress(),
-          // SendReceiveTabs(),
         ],
       ),
     );
@@ -165,20 +172,45 @@ class ConnectionSettings extends StatelessWidget {
   }
 }
 
+class LocationChooser extends StatelessWidget {
+  final String locationType;
+  const LocationChooser({super.key, required this.locationType});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(locationType),
+        Row(
+          spacing: 10,
+          children: [
+            Expanded(child: TextField()),
+            FilledButton(onPressed: () {}, child: Text("Browse")),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class SelectorArea extends StatelessWidget {
   const SelectorArea({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 10,
-      children: [
-        PresetSettings(),
-        SizedBox(height: 110, child: VerticalDivider()),
-        IRSettings(),
-      ],
-    );
+    Widget child;
+    if (context.watch<AxeLoaderModel>().fileLocation != null) {
+      child = PresetSettings();
+    } else {
+      if (context.watch<AxeLoaderModel>().sendReceiveMode ==
+          SendReceiveMode.send) {
+        child = Text("Select a file.");
+      } else {
+        child = Text("Choose a location.");
+      }
+    }
+    return Center(child: child);
   }
 }
 
@@ -262,43 +294,29 @@ class ActionProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isButtonDisabled() {
+      return context.watch<AxeLoaderModel>().fileLocation == null
+          ? true
+          : false;
+    }
+
     return Row(
       spacing: 10,
       children: [
         FilledButton(
-          onPressed: () {
-            var axeType = context.read<AxeLoaderModel>().axeFXType;
-            var mode = context.read<AxeLoaderModel>().sendReceiveMode;
+          onPressed: isButtonDisabled()
+              ? null
+              : () {
+                  var axeType = context.read<AxeLoaderModel>().axeFXType;
+                  var mode = context.read<AxeLoaderModel>().sendReceiveMode;
 
-            MidiCommand midiCommand = MidiCommand();
+                  MidiCommand midiCommand = MidiCommand();
 
-            // midiCommand.connectToDevice();
-          },
+                  // midiCommand.connectToDevice();
+                },
           child: Text("Begin"),
         ),
         Expanded(child: LinearProgressIndicator(value: 0.0)),
-      ],
-    );
-  }
-}
-
-class LocationChooser extends StatelessWidget {
-  final String locationType;
-  const LocationChooser({super.key, required this.locationType});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(locationType),
-        Row(
-          spacing: 10,
-          children: [
-            Expanded(child: TextField()),
-            FilledButton(onPressed: () {}, child: Text("Browse")),
-          ],
-        ),
       ],
     );
   }
