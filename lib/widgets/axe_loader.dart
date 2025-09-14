@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:axeii_loader/midi_controller.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -117,6 +118,8 @@ class SendReceiveActions extends StatelessWidget {
         },
         onSelectionChanged: (Set<SendReceiveMode> newSelection) {
           context.read<AxeLoaderModel>().sendReceiveMode = newSelection.first;
+          context.read<AxeLoaderModel>().fileLocation =
+              ''; // Also clear the path
         },
       ),
     );
@@ -185,21 +188,39 @@ class LocationChooser extends StatelessWidget {
         Row(
           spacing: 10,
           children: [
-            Expanded(child: TextField()),
+            Expanded(
+              child: TextField(
+                controller: TextEditingController(
+                  text: context.watch<AxeLoaderModel>().fileLocation,
+                ),
+                onSubmitted: (newLocation) {
+                  context.read<AxeLoaderModel>().fileLocation = newLocation;
+                },
+                style: TextStyle(fontSize: 10),
+              ),
+            ),
             FilledButton(
               onPressed: () async {
-                FilePickerResult? result = await FilePicker.platform.pickFiles(
-                  allowedExtensions: ['syx'],
-                  type: FileType.custom,
-                );
-
-                if (result != null) {
-                  File file = File(result.files.single.path!);
-                  if (context.mounted) {
-                    context.read<AxeLoaderModel>().fileLocation = file.path;
+                if (context.mounted) {
+                  if (context.read<AxeLoaderModel>().sendReceiveMode ==
+                      SendReceiveMode.send) {
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(
+                          allowedExtensions: ['syx'],
+                          type: FileType.custom,
+                        );
+                    if (result != null && context.mounted) {
+                      File file = File(result.files.single.path!);
+                      context.read<AxeLoaderModel>().fileLocation = file.path;
+                    }
+                  } else {
+                    String? selectedDirectory = await FilePicker.platform
+                        .getDirectoryPath();
+                    if (context.mounted && selectedDirectory != null) {
+                      context.read<AxeLoaderModel>().fileLocation =
+                          selectedDirectory;
+                    }
                   }
-                } else {
-                  // User canceled the picker
                 }
               },
               child: Text("Browse"),
@@ -218,7 +239,21 @@ class SelectorArea extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget child;
     if (context.watch<AxeLoaderModel>().fileLocation != null) {
-      child = PresetSettings();
+      child = FutureBuilder(
+        future: typeDetector(context.read<AxeLoaderModel>().fileLocation!),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.data == null) {
+            return Text("Could not ascertain type.");
+          } else if (snapshot.connectionState == ConnectionState.active) {
+            return Text("Ascertaining file type...");
+          } else if (snapshot.hasData) {
+            return PresetSettings(type: snapshot.data!);
+          } else {
+            return Text("Utter fail");
+          }
+        },
+      );
     } else {
       if (context.watch<AxeLoaderModel>().sendReceiveMode ==
           SendReceiveMode.send) {
@@ -232,7 +267,8 @@ class SelectorArea extends StatelessWidget {
 }
 
 class PresetSettings extends StatelessWidget {
-  const PresetSettings({super.key});
+  final AxeFileType type;
+  const PresetSettings({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -243,6 +279,7 @@ class PresetSettings extends StatelessWidget {
           spacing: 10,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(type == AxeFileType.ir ? "IR File Detected" : "Preset File Detected"),
             Text("Preset Selector:"),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -328,12 +365,16 @@ class ActionProgress extends StatelessWidget {
                   var mode = context.read<AxeLoaderModel>().sendReceiveMode;
 
                   MidiCommand midiCommand = MidiCommand();
-
+                  AxeController(midiCommand, context).changePreset(1);
                   // midiCommand.connectToDevice();
                 },
           child: Text("Begin"),
         ),
-        Expanded(child: LinearProgressIndicator(value: 0.0)),
+        Expanded(
+          child: LinearProgressIndicator(
+            value: context.watch<AxeLoaderModel>().transactionProgress,
+          ),
+        ),
       ],
     );
   }

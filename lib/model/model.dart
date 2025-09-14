@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 enum SendReceiveMode { send, receive }
 enum CabLocation { user, scratchpad }
 enum AxeFXType { original, xl, xlPlus }
+enum AxeFileType { preset, ir }
 
 //----- Model -----//
 class AxeLoaderModel extends ChangeNotifier {
@@ -11,10 +12,12 @@ class AxeLoaderModel extends ChangeNotifier {
   AxeFXType _axeFXType = AxeFXType.original;
   CabLocation _cabLocation = CabLocation.user;
   String _fileLocation = "";
+  double _transactionProgress = 0;
 
   SendReceiveMode get sendReceiveMode => _sendReceiveMode;
   AxeFXType get axeFXType => _axeFXType;
   CabLocation get cabLocation => _cabLocation;
+  double get transactionProgress => _transactionProgress;
 
   String? get fileLocation {
     if (sendReceiveMode == SendReceiveMode.send) {
@@ -41,6 +44,11 @@ class AxeLoaderModel extends ChangeNotifier {
 
   set cabLocation(CabLocation newLocation) {
     _cabLocation = newLocation;
+    notifyListeners();
+  }
+
+  set transactionProgress(double newProgress) {
+    _transactionProgress = newProgress;
     notifyListeners();
   }
 }
