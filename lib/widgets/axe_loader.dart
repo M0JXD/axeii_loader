@@ -240,21 +240,12 @@ class TransferSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget child;
     if (context.watch<AxeLoaderModel>().fileLocation != null) {
-      child = FutureBuilder(
-        future: typeDetector(context.read<AxeLoaderModel>().fileLocation!),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data == null) {
-            return Text("Could not ascertain type.");
-          } else if (snapshot.connectionState == ConnectionState.active) {
-            return Text("Ascertaining file type...");
-          } else if (snapshot.hasData) {
-            return PresetSettings(type: snapshot.data!);
-          } else {
-            return Text("Utter fail");
-          }
-        },
-      );
+      var type = context.watch<AxeLoaderModel>().detectedType;
+      if (type == null) {
+        child = Text("File type unknown");
+      } else {
+        child = PresetSettings(type: type);
+      }
     } else {
       if (context.watch<AxeLoaderModel>().sendReceiveMode ==
           SendReceiveMode.send) {
