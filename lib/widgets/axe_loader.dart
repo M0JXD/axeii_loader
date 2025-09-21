@@ -1,9 +1,10 @@
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
-import 'package:provider/provider.dart';
+import 'package:axeii_loader/widgets/transfer_settings.dart';
 import '../model/model.dart';
 import '../model/midi_controller.dart';
 
@@ -138,19 +139,19 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 180,
+      width: 185,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 10,
         children: [
           const Text("Connection Settings:"),
           DropdownMenu(
-            width: 180,
+            width: 185,
             hintText: "Model",
             dropdownMenuEntries: [
               DropdownMenuEntry(
                 value: AxeFXType.original,
-                label: "Axe-FX II MK I/II",
+                label: "Axe-FX II OG/MkII",
               ),
               DropdownMenuEntry(value: AxeFXType.xl, label: "Axe-FX II XL"),
               DropdownMenuEntry(
@@ -167,7 +168,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
             future: MidiCommand().devices,
             builder: (context, asyncSnapshot) {
               return DropdownMenu(
-                width: 180,
+                width: 185,
                 hintText: "MIDI Device",
                 dropdownMenuEntries:
                     List<DropdownMenuEntry<MidiDevice?>>.generate(
@@ -191,12 +192,13 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
             },
           ),
           SizedBox(
-            width: 180,
+            width: 185,
             child: FilledButton(
               onPressed: () {
                 setState(() {
                   // TODO: The list reloads with new devices, but a previously connected device stays?
                   context.read<AxeLoaderViewModel>().selectedDevice = null;
+                  AxeController.devChecker();
                 }); // Force to rebuild and get new device list
               },
               child: Text("Reload Device List"),
@@ -270,128 +272,11 @@ class LocationChooser extends StatelessWidget {
   }
 }
 
-class TransferSettings extends StatelessWidget {
-  const TransferSettings({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    Widget child;
-    if (context.watch<AxeLoaderViewModel>().fileLocation != null) {
-      var type = context.watch<AxeLoaderViewModel>().fileType;
-      if (type == null) {
-        child = Text("File type unknown");
-      } else {
-        child = PresetSettings(
-          type: type,
-          sendReceiveMode: context.watch<AxeLoaderViewModel>().sendReceiveMode,
-        );
-      }
-    } else {
-      if (context.watch<AxeLoaderViewModel>().sendReceiveMode ==
-          SendReceiveMode.send) {
-        child = Text("Select a file.");
-      } else {
-        child = Text("Choose a location.");
-      }
-    }
-    return Center(child: child);
-  }
-}
-
-class PresetSettings extends StatelessWidget {
-  final AxeFileType type;
-  final SendReceiveMode sendReceiveMode;
-
-  const PresetSettings({
-    super.key,
-    required this.type,
-    required this.sendReceiveMode,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Column(
-          spacing: 10,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              type == AxeFileType.ir
-                  ? "IR File Detected"
-                  : "Preset File Detected",
-            ),
-
-            // Text("Preset Selector:"),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.start,
-            //   spacing: 10,
-            //   children: [
-            //     SizedBox(width: 40, child: TextField()),
-            //     Column(
-            //       spacing: 2,
-            //       children: [
-            //         FilledButton(
-            //           child: Icon(Icons.arrow_upward_rounded),
-            //           onPressed: () {},
-            //         ),
-            //         FilledButton(
-            //           child: Icon(Icons.arrow_downward_rounded),
-            //           onPressed: () {},
-            //         ),
-            //       ],
-            //     ),
-            //   ],
-            // ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class IRSettings extends StatelessWidget {
-  const IRSettings({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("IR Settings:"),
-        RadioGroup<CabLocation>(
-          groupValue: context.watch<AxeLoaderViewModel>().cabLocation,
-          onChanged: (CabLocation? value) {
-            context.read<AxeLoaderViewModel>().cabLocation = value!;
-          },
-          child: SizedBox(
-            width: 170,
-            child: const Column(
-              children: <Widget>[
-                RadioListTile<CabLocation>(
-                  value: CabLocation.user,
-                  title: Text("User"),
-                ),
-                RadioListTile<CabLocation>(
-                  value: CabLocation.scratchpad,
-                  title: Text("Scratchpad"),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class ActionProgress extends StatelessWidget {
   const ActionProgress({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return Row(
       spacing: 10,
       children: [
