@@ -57,7 +57,6 @@ class AxeLoaderViewModel extends ChangeNotifier {
     _fileLocation = path;
     if (_sendReceiveMode == SendReceiveMode.send) {
       // Set off the type detector now
-      buttonDisable = isButtonDisabled();
       runTypeDetectorAndNotify(path);
     } else {
       buttonDisable = isButtonDisabled();
@@ -70,7 +69,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
     // When changing, also reset some stuff...
     fileLocation = '';
     transactionProgress = 0.0;
-    buttonDisable = isButtonDisabled();
+    buttonDisable = true;
     notifyListeners();
   }
 
@@ -108,6 +107,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
   //------ Get/Set Utilities -----//
   void runTypeDetectorAndNotify(String path) async {
     await _fileProperties.typeDetector(path);
+    buttonDisable = isButtonDisabled();
     notifyListeners();
   }
 
