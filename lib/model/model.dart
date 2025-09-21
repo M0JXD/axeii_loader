@@ -18,11 +18,11 @@ class AxeLoaderViewModel extends ChangeNotifier {
   bool _buttonDisable = true;
   String _fileLocation = "";
   double _transactionProgress = 0.0;
-  FileProperties _fileProperties = FileProperties(null, null);
   SendReceiveMode _sendReceiveMode = SendReceiveMode.send;
   AxeFXType? _axeFXType = AxeFXType.original;
   MidiDevice? _selectedDevice;
   CabLocation _cabLocation = CabLocation.user;
+  final FileProperties _fileProperties = FileProperties(null, null);
 
   //----- Getters -----//
   SendReceiveMode get sendReceiveMode => _sendReceiveMode;
@@ -34,12 +34,21 @@ class AxeLoaderViewModel extends ChangeNotifier {
   bool get buttonDisable => _buttonDisable;
   AxeFileType? get fileType => _fileProperties.fileType;
 
-
   String? get fileLocation {
     if (sendReceiveMode == SendReceiveMode.send) {
       return _fileLocation.contains(".syx") ? _fileLocation : null;
     } else {
       return _fileLocation.isEmpty ? null : _fileLocation;
+    }
+  }
+
+  String get sendReason {
+    if ((_fileProperties.unitType != AxeFXType.original &&
+            axeFXType == AxeFXType.original) &&
+        _fileLocation.isNotEmpty && _fileProperties.unitType != null) {
+      return "Can't send XL/XL+ Presets to Original/MkII!";
+    } else {
+      return '';
     }
   }
 
@@ -61,6 +70,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
     // When changing, also reset some stuff...
     fileLocation = '';
     transactionProgress = 0.0;
+    buttonDisable = isButtonDisabled();
     notifyListeners();
   }
 
@@ -95,45 +105,65 @@ class AxeLoaderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  //----- Methods -----//
-
-  void beginTransfer() async {
-    transactionProgress = 0.0;
-    if (_selectedDevice != null && _fileLocation.isNotEmpty) {
-      AxeController axeController = AxeController(device: selectedDevice!);
-      if (_sendReceiveMode == SendReceiveMode.send) {
-        if (_fileProperties.fileType == AxeFileType.preset) {
-          await for (final i in axeController.uploadPreset(_fileLocation)) {
-            transactionProgress = i;
-          }
-        } else {
-          axeController.uploadCab(_fileLocation, _location);
-        }
-      } else {
-        if (_fileProperties.fileType == AxeFileType.preset) {
-          axeController.downloadPreset(_fileLocation);
-        } else {
-          axeController.downloadCab(_fileLocation, _location);
-        }
-      }
-    }
-  }
-
-  bool isButtonDisabled() {
-    if (_sendReceiveMode == SendReceiveMode.send) {
-      return (_fileProperties.fileType == null || _selectedDevice == null) ? true : false;
-    } else {
-      return (_selectedDevice == null || _fileLocation.isNotEmpty)
-          ? true
-          : false;
-    }
-  }
-
-  void runTypeDetectorAndNotify(String path) async{
+  //------ Get/Set Utilities -----//
+  void runTypeDetectorAndNotify(String path) async {
     await _fileProperties.typeDetector(path);
     notifyListeners();
   }
 
+  bool isButtonDisabled() {
+    bool ret = true;
+    if (_fileProperties.fileType != null &&
+        _selectedDevice != null &&
+        _fileLocation.isNotEmpty &&
+        _fileProperties.unitType != null &&
+        _axeFXType != null) {
+      if (_sendReceiveMode == SendReceiveMode.send) {
+        if (_fileProperties.unitType != null) {
+          if (!(_axeFXType == AxeFXType.original &&
+              _fileProperties.unitType != AxeFXType.original)) {
+            ret = false;
+          }
+        }
+      } else if (_sendReceiveMode == SendReceiveMode.receive) {
+        ret = false;
+      }
+    }
+    return ret;
+  }
+
+  //----- Methods -----//
+
+  void beginTransfer() async {
+    transactionProgress = 0.0;
+    AxeController axeController = AxeController(
+      device: selectedDevice!,
+      axeFXType: _axeFXType!,
+      location: _fileLocation,
+      fileUnit: _fileProperties.unitType!,
+    );
+    if (_sendReceiveMode == SendReceiveMode.send) {
+      if (_fileProperties.fileType == AxeFileType.preset) {
+        await for (final i in axeController.uploadPreset()) {
+          transactionProgress = i;
+        }
+      } else {
+        await for (final i in axeController.uploadCab()) {
+          transactionProgress = i;
+        }
+      }
+    } else {
+      if (_fileProperties.fileType == AxeFileType.preset) {
+        await for (final i in axeController.downloadPreset()) {
+          transactionProgress = i;
+        }
+      } else {
+        await for (final i in axeController.downloadCab()) {
+          transactionProgress = i;
+        }
+      }
+    }
+  }
 }
 
 class FileProperties {
@@ -151,13 +181,25 @@ class FileProperties {
       // A preset file's 6th byte should be 0x77
       if (fileAsBytes[5] == 0x77) {
         fileType = AxeFileType.preset;
-      }
-      // An IR file's 6th byte should be 0x7A
-      if (fileAsBytes[5] == 0x7A) {
+      } else if (fileAsBytes[5] == 0x7A) {
+        // An IR file's 6th byte should be 0x7A
         fileType = AxeFileType.ir;
+      } else {
+        fileType = null;
+      }
+
+      if (fileAsBytes[4] == 0x03) {
+        unitType = AxeFXType.original;
+      } else if (fileAsBytes[4] == 0x06) {
+        unitType = AxeFXType.xl;
+      } else if (fileAsBytes[4] == 0x07) {
+        unitType = AxeFXType.xlPlus;
+      } else {
+        unitType = null;
       }
     } on PathNotFoundException {
       fileType = null;
+      unitType = null;
     }
   }
 }
