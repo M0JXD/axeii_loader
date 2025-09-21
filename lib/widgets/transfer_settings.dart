@@ -1,3 +1,4 @@
+import 'package:axeii_loader/model/midi_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:input_quantity/input_quantity.dart';
 import 'package:provider/provider.dart';
@@ -19,16 +20,18 @@ class TransferSettings extends StatelessWidget {
           case null:
             information = Text("File type unknown.");
           case AxeFileType.ir:
-            information = Text("IR File Detected.");
+            information = Text("IR File Detected. Choose where to send to:");
             controls = IRSettings();
           case AxeFileType.preset:
             information = Text("Preset File Detected.");
             if (context.read<AxeLoaderViewModel>().sendReason.isNotEmpty) {
-              information = Text("Preset File Detected.\n${context.read<AxeLoaderViewModel>().sendReason}");
+              information = Text(
+                "Preset File Detected.\n${context.read<AxeLoaderViewModel>().sendReason}",
+              );
             }
         }
       } else {
-        information = Text("Select what to receive:");
+        information = Text("Select what to receive and location:");
         controls = GetterSettings();
       }
     } else {
@@ -41,8 +44,9 @@ class TransferSettings extends StatelessWidget {
     return controls == null
         ? Center(child: information)
         : Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 10,
             children: [
               Center(child: information),
               controls,
@@ -51,76 +55,149 @@ class TransferSettings extends StatelessWidget {
   }
 }
 
-class GetterSettings extends StatelessWidget {
+class GetterSettings extends StatefulWidget {
   const GetterSettings({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          spacing: 10,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("Preset Number to Get:"),
-            InputQty(
-              decoration: QtyDecorationProps(
-                qtyStyle: QtyStyle.btnOnRight,
-                btnColor: Colors.grey,
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Theme.of(context).hintColor),
-                ),
-              ),
-            ),
-
-
-          ],
-        ),
-      ],
-    );
-  }
+  State<GetterSettings> createState() => _GetterSettingsState();
 }
 
-
-class IRSettings extends StatelessWidget {
-  const IRSettings({super.key});
+class _GetterSettingsState extends State<GetterSettings> {
+  AxeFileType fileType = AxeFileType.preset;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("IR Settings:"),
-        Row(
-          children: [
-            RadioGroup<CabLocation>(
-              groupValue: context.watch<AxeLoaderViewModel>().cabLocation,
-              onChanged: (CabLocation? value) {
-                context.read<AxeLoaderViewModel>().cabLocation = value!;
-              },
-              child: SizedBox(
-                width: 170,
-                child: const Column(
-                  children: <Widget>[
-                    RadioListTile<CabLocation>(
-                      value: CabLocation.user,
-                      title: Text("User"),
-                    ),
-                    RadioListTile<CabLocation>(
-                      value: CabLocation.scratchpad,
-                      title: Text("Scratchpad"),
-                    ),
-                  ],
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        spacing: 10,
+        children: [
+          RadioGroup<AxeFileType>(
+            groupValue: fileType,
+            onChanged: (AxeFileType? value) {
+              setState(() {
+                fileType = value!;
+                context.read<AxeLoaderViewModel>().receivePlace = value;
+              });
+            },
+            child: SizedBox(
+              width: 170,
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  RadioListTile<AxeFileType>(
+                    value: AxeFileType.preset,
+                    title: Text("Preset"),
+                    toggleable: false,
+                  ),
+                  RadioListTile<AxeFileType>(
+                    value: AxeFileType.ir,
+                    title: Text("Cabinet"),
+                    toggleable: false,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          InputQty(
+            decoration: QtyDecorationProps(
+              qtyStyle: QtyStyle.btnOnRight,
+              btnColor: Theme.of(context).primaryColorDark,
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).primaryColorLight,
+                  width: 0.5,
                 ),
               ),
             ),
-            InputQty(),
-          ],
-        ),
-      ],
+            maxVal: fileType == AxeFileType.preset
+                ? context.watch<AxeLoaderViewModel>().axeFXType ==
+                          AxeFXType.original
+                      ? 383
+                      : 768
+                : context.watch<AxeLoaderViewModel>().axeFXType ==
+                      AxeFXType.original
+                ? 100
+                : 500,
+            minVal: fileType == AxeFileType.preset ? 0 : 1,
+          ),
+        ],
+      ),
     );
   }
 }
 
+enum CabLocation { user, scratchpad }
 
+class IRSettings extends StatefulWidget {
+  const IRSettings({super.key});
+
+  @override
+  State<IRSettings> createState() => _IRSettingsState();
+}
+
+class _IRSettingsState extends State<IRSettings> {
+  CabLocation cabLocation = CabLocation.user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        spacing: 10,
+        children: [
+          RadioGroup<CabLocation>(
+            groupValue: cabLocation,
+            onChanged: (CabLocation? value) {
+              setState(() => cabLocation = value!);
+            },
+            child: SizedBox(
+              width: 170,
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  RadioListTile<CabLocation>(
+                    value: CabLocation.user,
+                    title: Text("User"),
+                  ),
+                  RadioListTile<CabLocation>(
+                    value: CabLocation.scratchpad,
+                    title: Text("Scratchpad"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          InputQty(
+            decoration: QtyDecorationProps(
+              qtyStyle: QtyStyle.btnOnRight,
+              btnColor: Theme.of(context).primaryColorDark,
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: Theme.of(context).primaryColorLight,
+                  width: 0.5,
+                ),
+              ),
+            ),
+            initVal: 1,
+            maxVal: cabLocation == CabLocation.user
+                ? context.watch<AxeLoaderViewModel>().axeFXType ==
+                          AxeFXType.original
+                      ? 100
+                      : 500
+                : 4,
+            minVal: 1,
+            onQtyChanged: (value) {
+              if (cabLocation == CabLocation.user) {
+                // TODO: This likely needs changed for handling XL units
+                context.read<AxeLoaderViewModel>().location = value.toInt() + 100;
+              } else {
+                context.read<AxeLoaderViewModel>().location = value.toInt();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

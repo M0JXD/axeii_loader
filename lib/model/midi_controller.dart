@@ -13,11 +13,13 @@ class AxeController {
   AxeFXType axeFXType;
   AxeFXType fileUnit;
   String location;
+  int number;
 
   AxeController({
     required this.device,
     required this.location,
     required this.fileUnit,
+    required this.number,
     this.axeFXType = AxeFXType.original,
   });
 

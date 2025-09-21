@@ -9,25 +9,22 @@ enum SendReceiveMode { send, receive }
 
 enum AxeFileType { preset, ir }
 
-enum CabLocation { user, scratchpad }
-
 //----- Model -----//
 class AxeLoaderViewModel extends ChangeNotifier {
   //----- Fields -----//
   int _location = 0;
+  AxeFileType receivePlace = AxeFileType.preset;
   bool _buttonDisable = true;
   String _fileLocation = "";
   double _transactionProgress = 0.0;
   SendReceiveMode _sendReceiveMode = SendReceiveMode.send;
   AxeFXType? _axeFXType = AxeFXType.original;
   MidiDevice? _selectedDevice;
-  CabLocation _cabLocation = CabLocation.user;
   final FileProperties _fileProperties = FileProperties(null, null);
 
   //----- Getters -----//
   SendReceiveMode get sendReceiveMode => _sendReceiveMode;
   AxeFXType? get axeFXType => _axeFXType;
-  CabLocation get cabLocation => _cabLocation;
   MidiDevice? get selectedDevice => _selectedDevice;
   int get location => _location;
   double get transactionProgress => _transactionProgress;
@@ -45,7 +42,8 @@ class AxeLoaderViewModel extends ChangeNotifier {
   String get sendReason {
     if ((_fileProperties.unitType != AxeFXType.original &&
             axeFXType == AxeFXType.original) &&
-        _fileLocation.isNotEmpty && _fileProperties.unitType != null) {
+        _fileLocation.isNotEmpty &&
+        _fileProperties.unitType != null) {
       return "Can't send XL/XL+ Presets to Original/MkII!";
     } else {
       return '';
@@ -75,11 +73,6 @@ class AxeLoaderViewModel extends ChangeNotifier {
 
   set axeFXType(AxeFXType? newType) {
     _axeFXType = newType;
-    notifyListeners();
-  }
-
-  set cabLocation(CabLocation newLocation) {
-    _cabLocation = newLocation;
     notifyListeners();
   }
 
@@ -113,18 +106,22 @@ class AxeLoaderViewModel extends ChangeNotifier {
 
   bool isButtonDisabled() {
     bool ret = true;
-    if (_fileProperties.fileType != null &&
-        _selectedDevice != null &&
+
+    // These need to be set to send or receive
+    if (_selectedDevice != null &&
         _fileLocation.isNotEmpty &&
-        _fileProperties.unitType != null &&
         _axeFXType != null) {
+      // Just send checks
       if (_sendReceiveMode == SendReceiveMode.send) {
-        if (_fileProperties.unitType != null) {
+        if (_fileProperties.unitType != null &&
+            _fileProperties.fileType != null) {
           if (!(_axeFXType == AxeFXType.original &&
               _fileProperties.unitType != AxeFXType.original)) {
             ret = false;
           }
         }
+
+        // Just receive checks
       } else if (_sendReceiveMode == SendReceiveMode.receive) {
         ret = false;
       }
@@ -133,13 +130,13 @@ class AxeLoaderViewModel extends ChangeNotifier {
   }
 
   //----- Methods -----//
-
   void beginTransfer() async {
     transactionProgress = 0.0;
     AxeController axeController = AxeController(
       device: selectedDevice!,
       axeFXType: _axeFXType!,
       location: _fileLocation,
+      number: _location,
       fileUnit: _fileProperties.unitType!,
     );
     if (_sendReceiveMode == SendReceiveMode.send) {
@@ -153,7 +150,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
         }
       }
     } else {
-      if (_fileProperties.fileType == AxeFileType.preset) {
+      if (receivePlace == AxeFileType.preset) {
         await for (final i in axeController.downloadPreset()) {
           transactionProgress = i;
         }
