@@ -47,11 +47,9 @@ class AxeLoaderViewModel extends ChangeNotifier {
   set fileLocation(String path) {
     _fileLocation = path;
     if (_sendReceiveMode == SendReceiveMode.send) {
-      // Set off the type detector now, it will call notify when it's done
+      // Set off the type detector now
       buttonDisable = isButtonDisabled();
-      _fileProperties.typeDetector(_fileLocation);
-      notifyListeners();
-      // typeDetector(path);
+      runTypeDetectorAndNotify(path);
     } else {
       buttonDisable = isButtonDisabled();
       notifyListeners();
@@ -130,6 +128,12 @@ class AxeLoaderViewModel extends ChangeNotifier {
           : false;
     }
   }
+
+  void runTypeDetectorAndNotify(String path) async{
+    await _fileProperties.typeDetector(path);
+    notifyListeners();
+  }
+
 }
 
 class FileProperties {
@@ -138,7 +142,7 @@ class FileProperties {
 
   FileProperties(this.fileType, this.unitType);
 
-  void typeDetector(String pathToFile) async {
+  Future<void> typeDetector(String pathToFile) async {
     fileType = null;
     var file = File(pathToFile);
     Uint8List fileAsBytes;
