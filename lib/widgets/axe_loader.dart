@@ -277,7 +277,7 @@ class TransferSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget child;
     if (context.watch<AxeLoaderViewModel>().fileLocation != null) {
-      var type = context.watch<AxeLoaderViewModel>().detectedType;
+      var type = context.watch<AxeLoaderViewModel>().fileType;
       if (type == null) {
         child = Text("File type unknown");
       } else {
@@ -396,7 +396,7 @@ class ActionProgress extends StatelessWidget {
       spacing: 10,
       children: [
         FilledButton(
-          onPressed: context.watch<AxeLoaderViewModel>().buttonEnable
+          onPressed: context.watch<AxeLoaderViewModel>().buttonDisable
               ? null
               : () async {
                   context.read<AxeLoaderViewModel>().beginTransfer();

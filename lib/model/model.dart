@@ -15,13 +15,12 @@ enum CabLocation { user, scratchpad }
 class AxeLoaderViewModel extends ChangeNotifier {
   //----- Fields -----//
   int _location = 0;
-  bool _buttonEnable = false;
+  bool _buttonDisable = true;
   String _fileLocation = "";
   double _transactionProgress = 0.0;
   FileProperties _fileProperties = FileProperties(null, null);
   SendReceiveMode _sendReceiveMode = SendReceiveMode.send;
   AxeFXType? _axeFXType = AxeFXType.original;
-  AxeFileType? _detectedType;
   MidiDevice? _selectedDevice;
   CabLocation _cabLocation = CabLocation.user;
 
@@ -32,7 +31,9 @@ class AxeLoaderViewModel extends ChangeNotifier {
   MidiDevice? get selectedDevice => _selectedDevice;
   int get location => _location;
   double get transactionProgress => _transactionProgress;
-  bool get buttonEnable => _buttonEnable;
+  bool get buttonDisable => _buttonDisable;
+  AxeFileType? get fileType => _fileProperties.fileType;
+
 
   String? get fileLocation {
     if (sendReceiveMode == SendReceiveMode.send) {
@@ -42,19 +43,17 @@ class AxeLoaderViewModel extends ChangeNotifier {
     }
   }
 
-  AxeFileType? get detectedType => _detectedType;
-
   //----- Setters -----//
   set fileLocation(String path) {
     _fileLocation = path;
     if (_sendReceiveMode == SendReceiveMode.send) {
       // Set off the type detector now, it will call notify when it's done
-      buttonEnable = isButtonDisabled();
+      buttonDisable = isButtonDisabled();
       _fileProperties.typeDetector(_fileLocation);
       notifyListeners();
       // typeDetector(path);
     } else {
-      buttonEnable = isButtonDisabled();
+      buttonDisable = isButtonDisabled();
       notifyListeners();
     }
   }
@@ -79,7 +78,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
 
   set selectedDevice(MidiDevice? newDevice) {
     _selectedDevice = newDevice;
-    buttonEnable = isButtonDisabled();
+    buttonDisable = isButtonDisabled();
     notifyListeners();
   }
 
@@ -93,8 +92,8 @@ class AxeLoaderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  set buttonEnable(bool newState) {
-    _buttonEnable = newState;
+  set buttonDisable(bool newState) {
+    _buttonDisable = newState;
     notifyListeners();
   }
 
@@ -105,7 +104,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
     if (_selectedDevice != null && _fileLocation.isNotEmpty) {
       AxeController axeController = AxeController(device: selectedDevice!);
       if (_sendReceiveMode == SendReceiveMode.send) {
-        if (_detectedType == AxeFileType.preset) {
+        if (_fileProperties.fileType == AxeFileType.preset) {
           await for (final i in axeController.uploadPreset(_fileLocation)) {
             transactionProgress = i;
           }
@@ -113,7 +112,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
           axeController.uploadCab(_fileLocation, _location);
         }
       } else {
-        if (_detectedType == AxeFileType.preset) {
+        if (_fileProperties.fileType == AxeFileType.preset) {
           axeController.downloadPreset(_fileLocation);
         } else {
           axeController.downloadCab(_fileLocation, _location);
@@ -124,7 +123,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
 
   bool isButtonDisabled() {
     if (_sendReceiveMode == SendReceiveMode.send) {
-      return (_detectedType == null || _selectedDevice == null) ? true : false;
+      return (_fileProperties.fileType == null || _selectedDevice == null) ? true : false;
     } else {
       return (_selectedDevice == null || _fileLocation.isNotEmpty)
           ? true
