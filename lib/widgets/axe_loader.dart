@@ -188,6 +188,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
                     context.read<AxeLoaderViewModel>().selectedDevice = value;
                   }
                 },
+                initialSelection: null,
               );
             },
           ),
@@ -198,7 +199,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
                 setState(() {
                   // TODO: The list reloads with new devices, but a previously connected device stays?
                   context.read<AxeLoaderViewModel>().selectedDevice = null;
-                  AxeController.devChecker();
+                  // AxeController.devChecker();
                 }); // Force to rebuild and get new device list
               },
               child: Text("Reload Device List"),

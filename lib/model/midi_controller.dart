@@ -142,7 +142,7 @@ class AxeController {
       print("Length was zero");
     } else {
       for (var i in devices) {
-        print(i.id);
+        print(i.name);
       }
     }
   }
