@@ -192,6 +192,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
               );
             },
           ),
+          SizedBox(height: 5,),
           SizedBox(
             width: 185,
             child: FilledButton(
