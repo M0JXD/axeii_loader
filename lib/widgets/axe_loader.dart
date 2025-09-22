@@ -155,14 +155,14 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 185,
+      width: 200,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 10,
         children: [
           const Text("Connection Settings:"),
           DropdownMenu(
-            width: 185,
+            width: 200,
             hintText: "Model",
             dropdownMenuEntries: const [
               DropdownMenuEntry(
@@ -184,7 +184,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
             future: MidiCommand().devices,
             builder: (context, asyncSnapshot) {
               return DropdownMenu(
-                width: 185,
+                width: 200,
                 hintText: "MIDI Device",
                 dropdownMenuEntries:
                     List<DropdownMenuEntry<MidiDevice?>>.generate(
@@ -210,7 +210,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
           ),
           const SizedBox(height: 5),
           SizedBox(
-            width: 185,
+            width: 200,
             child: FilledButton(
               onPressed: () {
                 setState(() {
