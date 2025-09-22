@@ -31,7 +31,7 @@ class TransferSettings extends StatelessWidget {
             }
         }
       } else {
-        information = const Text("Select what to receive and location:");
+        information = const Text("Choose type and location to receive:");
         controls = const GetterSettings();
       }
     } else {

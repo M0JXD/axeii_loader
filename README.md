@@ -1,5 +1,7 @@
 # Axe-FX II Loader
 
+![Light Mode](/assets/screenshot_light.png) 
+
 A simple utility for loading presets and IRs into and out of the Axe-FX II.
 Only tested on Linux Mint 22.2 with an Axe-FX II MkII.
 
@@ -13,6 +15,10 @@ But should be possible to get working on all of Flutter's supported platforms.
 If the Axe-FX is sending MIDI clock pulses (which it will start doing after requesting the firmware version, e.g. via Fractal-Bot) this util will not work!
 
 Note: The refresh devices doesn't remove unplugged devices from the list (if you restart the app it will clear). However new devices appear, and replugged devices continue to work with the stubborn entry. This seems to be a limitation of the MIDI library and out of my hands 🙁
+
+For those disgusted by light mode, don't worry it respects your system theme:
+
+![Dark Mode](/assets/screenshot_dark.png)
 
 For the terminal traditionalist, you might like the CLI version I made of this utility: https://github.com/M0JXD/axeii_loader_cli
 
@@ -31,3 +37,5 @@ Thanks to:
 - The Wine contributors, which has let me run Fractal-Bot and Axe-Edit fairly well
 - Fractal Audio for making *the best* modellers
 - The contributors to the Axe-FX Wiki's
+
+
