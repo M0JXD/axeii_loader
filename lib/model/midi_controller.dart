@@ -25,8 +25,8 @@ class AxeController {
   });
 
   String getPresetName(Uint8List fileBytes) {
-    // TODO: For presets I can see in the hex editor it's fairly easy to get the name.
-    // Save with the name instead of just preset
+    // TODO: Save presets with their actual name
+    //For presets I can see in the hex editor it's fairly easy to get the name.
     return 'preset.syx';
   }
 
@@ -64,7 +64,7 @@ class AxeController {
     command[2] = 0x01;
     command[3] = 0x74;
 
-    /* TODO: How does all this work for XL/XL+? */
+    // TODO: TODO: This likely needs changed for handling XL units
     if (type == AxeFileType.ir) {
       command[5] = 0x7A; /* IR Dump Req ID */
       command[6] = number - 1;
@@ -187,7 +187,7 @@ class AxeController {
 
     Uint8List fileData = Uint8List(15000);
 
-    // TODO: Likely needs changed for XL/XL+
+    // TODO: TODO: This likely needs changed for handling XL units
     Uint8List reqCommand = Uint8List(9);
     reqCommand.setRange(0, 9, [
       0xF0,
