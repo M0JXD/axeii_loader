@@ -7,14 +7,14 @@ environment:
   sdk: ^3.9.0
 
 dependencies:
-  file_picker: ^10.3.2
-  flex_color_scheme: ^8.3.0
   flutter:
     sdk: flutter
-  flutter_midi_command: ^0.5.3
   provider: ^6.1.5+1
   window_manager: ^0.5.1
+  file_picker: ^10.3.2
+  flutter_midi_command: ^0.5.3
   input_quantity: ^2.5.0
+  flex_color_scheme: ^8.3.0
 
 dev_dependencies:
   flutter_test:

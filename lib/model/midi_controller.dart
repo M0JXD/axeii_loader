@@ -92,6 +92,8 @@ class AxeController {
     final dataPackets = axeFXType == AxeFXType.original ? 32 : 64;
     var fileToSend = (await File(location).readAsBytes());
     await MidiCommand().connectToDevice(device);
+    await Future.delayed(const Duration(milliseconds: 200));
+
 
     Uint8List startSysex = fileToSend.sublist(0, 12);
     startSysex = recalcSysex(startSysex);
@@ -120,13 +122,13 @@ class AxeController {
 
   Stream<double> downloadPreset() async* {
     var fileSize = (axeFXType == AxeFXType.original ? 6487 : 12951);
-    Uint8List fileData = Uint8List(15000);
+    Uint8List fileData = Uint8List(13100);
 
     Uint8List reqCommand = Uint8List(10);
     reqCommand = calcReqCommand(AxeFileType.preset, reqCommand);
 
     await MidiCommand().connectToDevice(device);
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     MidiCommand().sendData(reqCommand);
 
@@ -183,8 +185,7 @@ class AxeController {
 
   Stream<double> downloadCab() async* {
     var fileSize = (axeFXType == AxeFXType.original ? 10904 : 10905);
-
-    Uint8List fileData = Uint8List(15000);
+    Uint8List fileData = Uint8List(11100);
 
     // TODO: This likely needs changed for handling XL units
     Uint8List reqCommand = Uint8List(9);
@@ -203,7 +204,7 @@ class AxeController {
     reqCommand = recalcSysex(reqCommand);
 
     await MidiCommand().connectToDevice(device);
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     MidiCommand().sendData(reqCommand);
 

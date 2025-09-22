@@ -249,23 +249,21 @@ class _LocationChooserState extends State<LocationChooser> {
               onPressed: buttonDisable
                   ? null
                   : () async {
+                      setState(() {
+                        buttonDisable = true;
+                      });
                       if (context.mounted) {
                         if (context
                                 .read<AxeLoaderViewModel>()
                                 .sendReceiveMode ==
                             SendReceiveMode.send) {
-                          setState(() {
-                            buttonDisable = true;
-                          });
                           FilePickerResult? result = await FilePicker.platform
                               .pickFiles(
                                 allowedExtensions: ['syx'],
                                 type: FileType.custom,
                                 dialogTitle: "Choose file...",
                               );
-                          setState(() {
-                            buttonDisable = false;
-                          });
+
                           if (result != null && context.mounted) {
                             File file = File(result.files.single.path!);
                             context.read<AxeLoaderViewModel>().fileLocation =
@@ -282,6 +280,9 @@ class _LocationChooserState extends State<LocationChooser> {
                           }
                         }
                       }
+                      setState(() {
+                        buttonDisable = false;
+                      });
                     },
               child: const Text("Browse"),
             ),
