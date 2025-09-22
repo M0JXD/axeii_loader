@@ -282,6 +282,7 @@ class _LocationChooserState extends State<LocationChooser> {
                       }
                       setState(() {
                         buttonDisable = false;
+                        context.read<AxeLoaderViewModel>().transactionProgress = 0.0;
                       });
                     },
               child: const Text("Browse"),
