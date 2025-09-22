@@ -2,6 +2,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:io';
+import 'package:axeii_loader/model/model.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_midi_command/flutter_midi_command.dart';
 
@@ -11,7 +12,7 @@ class AxeController {
   static List<int> currentSysex = [];
   MidiDevice device;
   AxeFXType axeFXType;
-  AxeFXType fileUnit;
+  AxeFXType? fileUnit;
   String location;
   int number;
 
@@ -50,6 +51,37 @@ class AxeController {
     return sysex;
   }
 
+  Uint8List calcReqCommand(AxeFileType type, Uint8List command) {
+    /* HEADER BYTES */
+    command[0] = 0xF0;
+    command[1] = 0x00;
+    command[2] = 0x01;
+    command[3] = 0x74;
+
+    /* TODO: How does all this work for XL/XL+? */
+    if (type == AxeFileType.ir) {
+        command[5] = 0x7A;  /* IR Dump Req ID */
+        command[6] = number - 1;
+        command[7] = 0x0;
+        command[8] = 0x10;
+    } else if (type == AxeFileType.preset) {
+        command[5] = 0x03;  /* Patch Dump Req ID */
+
+        /* Banks and preset number */
+        if (number < 128) {
+            command[6] = 0x00;
+            command[7] = number;
+        } else if (number < 256) {
+            command[6] = 0x01;
+            command[7] = number - 128;
+        } else if (number < 384) {
+            command[6] = 0x02;
+            command[7] = number - 256;
+        }
+    }
+    return recalcSysex(command);
+}
+
   Stream<double> uploadPreset() async* {
     final dataPackets = axeFXType == AxeFXType.original ? 32 : 64;
     var fileToSend = (await File(location).readAsBytes());
@@ -82,33 +114,49 @@ class AxeController {
   }
 
   Stream<double> downloadPreset() async* {
-    Uint8List fileData = Uint8List(12951);
-    MidiCommand().connectToDevice(device);
+    Uint8List fileData = Uint8List(15000);
+
+    Uint8List reqCommand = Uint8List(10);
+    reqCommand = calcReqCommand(AxeFileType.preset, reqCommand);
+
+    await MidiCommand().connectToDevice(device);
+    MidiCommand().sendData(reqCommand);
+    await Future.delayed(const Duration(milliseconds: 5));
 
     var i = 0;
-    await for (final value in MidiCommand().onMidiDataReceived!) {
-      // Check that this is the end of the file...
-      fileData.replaceRange(i, value.data.length, value.data);
-      if (i % 100 == 0) {
-        yield 1.0 / 66 * i;
-      }
-      i++;
-    }
+    var sub = MidiCommand().onMidiDataReceived?.listen((val) {
+      print("Does the listen method work?");
+    });
+
+    sub?.resume();
+    // await for (final value in MidiCommand().onMidiDataReceived!) {
+    //   // Check that this is the end of the file...
+    //   print("We are getting events right?");
+    //   fileData.replaceRange(i, value.data.length, value.data);
+    //   i += value.data.length;
+    //   yield (1.0 / 6487) * i;
+    //   if (i >= 6487) {
+    //     break;
+    //   }
+    // }
     yield 1;
     MidiCommand().disconnectDevice(device);
 
-    var file = File(location);
-    file.create();
+    List<int> realBytes = fileData.sublist(0, 6487);
+
+    var file = File("$location/preset.syx");
+    file = await file.create();
+    file = await file.writeAsBytes(realBytes);
   }
 
   Stream<double> uploadCab() async* {
     var fileToSend = (await File(location).readAsBytes());
-    var fileBytes = fileToSend.length;
     final dataStartAdd = fileUnit == AxeFXType.original ? 11 : 12;
     await MidiCommand().connectToDevice(device);
 
-    Uint8List startSysex = fileToSend.sublist(0, 12);
-    startSysex = recalcSysex(startSysex);
+    // Uint8List startSysex = fileToSend.sublist(0, 12);
+    Uint8List startSysex = Uint8List(11);
+    startSysex = calcReqCommand(AxeFileType.ir, startSysex);
     MidiCommand().sendData(startSysex);
     yield (1.0 / 64 + 2);
     await Future.delayed(const Duration(milliseconds: 5));
@@ -124,7 +172,7 @@ class AxeController {
       await Future.delayed(const Duration(milliseconds: 5));
     }
 
-    Uint8List endSysex = fileToSend.sublist(fileBytes - 13);
+    Uint8List endSysex = fileToSend.sublist(fileToSend.length - 13);
     endSysex = recalcSysex(endSysex);
     MidiCommand().sendData(endSysex);
     yield 1.0;

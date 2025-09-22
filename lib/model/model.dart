@@ -12,7 +12,7 @@ enum AxeFileType { preset, ir }
 //----- Model -----//
 class AxeLoaderViewModel extends ChangeNotifier {
   //----- Fields -----//
-  int _location = 0;
+  int number = 0;
   AxeFileType receivePlace = AxeFileType.preset;
   bool _buttonDisable = true;
   String _fileLocation = "";
@@ -26,7 +26,6 @@ class AxeLoaderViewModel extends ChangeNotifier {
   SendReceiveMode get sendReceiveMode => _sendReceiveMode;
   AxeFXType? get axeFXType => _axeFXType;
   MidiDevice? get selectedDevice => _selectedDevice;
-  int get location => _location;
   double get transactionProgress => _transactionProgress;
   bool get buttonDisable => _buttonDisable;
   AxeFileType? get fileType => _fileProperties.fileType;
@@ -67,12 +66,13 @@ class AxeLoaderViewModel extends ChangeNotifier {
     // When changing, also reset some stuff...
     fileLocation = '';
     transactionProgress = 0.0;
-    buttonDisable = true;
+    buttonDisable = isButtonDisabled();
     notifyListeners();
   }
 
   set axeFXType(AxeFXType? newType) {
     _axeFXType = newType;
+    buttonDisable = isButtonDisabled();
     notifyListeners();
   }
 
@@ -82,10 +82,6 @@ class AxeLoaderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  set location(int newLocation) {
-    _location = newLocation;
-    notifyListeners();
-  }
 
   set transactionProgress(double newProgress) {
     _transactionProgress = newProgress;
@@ -115,8 +111,10 @@ class AxeLoaderViewModel extends ChangeNotifier {
       if (_sendReceiveMode == SendReceiveMode.send) {
         if (_fileProperties.unitType != null &&
             _fileProperties.fileType != null) {
-          if (!(_axeFXType == AxeFXType.original &&
+          if (_fileProperties.fileType == AxeFileType.preset &&  !(_axeFXType == AxeFXType.original &&
               _fileProperties.unitType != AxeFXType.original)) {
+            ret = false;
+          } else if (_fileProperties.fileType == AxeFileType.ir) {
             ret = false;
           }
         }
@@ -131,13 +129,14 @@ class AxeLoaderViewModel extends ChangeNotifier {
 
   //----- Methods -----//
   void beginTransfer() async {
+    buttonDisable = true;
     transactionProgress = 0.0;
     AxeController axeController = AxeController(
       device: selectedDevice!,
       axeFXType: _axeFXType!,
       location: _fileLocation,
-      number: _location,
-      fileUnit: _fileProperties.unitType!,
+      number: number,
+      fileUnit: _fileProperties.unitType,
     );
     if (_sendReceiveMode == SendReceiveMode.send) {
       if (_fileProperties.fileType == AxeFileType.preset) {
@@ -160,6 +159,7 @@ class AxeLoaderViewModel extends ChangeNotifier {
         }
       }
     }
+    buttonDisable = isButtonDisabled();
   }
 }
 
