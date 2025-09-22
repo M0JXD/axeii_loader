@@ -24,6 +24,12 @@ class AxeController {
     this.axeFXType = AxeFXType.original,
   });
 
+  String getPresetName(Uint8List fileBytes) {
+    // TODO: For presets I can see in the hex editor it's fairly easy to get the name.
+    // Save with the name instead of just preset
+    return 'preset.syx';
+  }
+
   //----- Methods -----//
   Uint8List recalcSysex(Uint8List sysex) {
     int checksumByte = 0xF0;
@@ -60,27 +66,27 @@ class AxeController {
 
     /* TODO: How does all this work for XL/XL+? */
     if (type == AxeFileType.ir) {
-        command[5] = 0x7A;  /* IR Dump Req ID */
-        command[6] = number - 1;
-        command[7] = 0x0;
-        command[8] = 0x10;
+      command[5] = 0x7A; /* IR Dump Req ID */
+      command[6] = number - 1;
+      command[7] = 0x0;
+      command[8] = 0x10;
     } else if (type == AxeFileType.preset) {
-        command[5] = 0x03;  /* Patch Dump Req ID */
+      command[5] = 0x03; /* Patch Dump Req ID */
 
-        /* Banks and preset number */
-        if (number < 128) {
-            command[6] = 0x00;
-            command[7] = number;
-        } else if (number < 256) {
-            command[6] = 0x01;
-            command[7] = number - 128;
-        } else if (number < 384) {
-            command[6] = 0x02;
-            command[7] = number - 256;
-        }
+      /* Banks and preset number */
+      if (number < 128) {
+        command[6] = 0x00;
+        command[7] = number;
+      } else if (number < 256) {
+        command[6] = 0x01;
+        command[7] = number - 128;
+      } else if (number < 384) {
+        command[6] = 0x02;
+        command[7] = number - 256;
+      }
     }
     return recalcSysex(command);
-}
+  }
 
   Stream<double> uploadPreset() async* {
     final dataPackets = axeFXType == AxeFXType.original ? 32 : 64;
@@ -114,6 +120,7 @@ class AxeController {
   }
 
   Stream<double> downloadPreset() async* {
+    var fileSize = (axeFXType == AxeFXType.original ? 6487 : 12951);
     Uint8List fileData = Uint8List(15000);
 
     Uint8List reqCommand = Uint8List(10);
@@ -122,32 +129,26 @@ class AxeController {
     await MidiCommand().connectToDevice(device);
     await Future.delayed(const Duration(milliseconds: 100));
 
-    var sub = MidiCommand().onMidiDataReceived?.listen((val) {
-      print("This never prints");
-    });
-
-    await Future.delayed(const Duration(milliseconds: 5));
     MidiCommand().sendData(reqCommand);
 
     var i = 0;
-    // await for (final value in MidiCommand().onMidiDataReceived!) {
-    //   // Check that this is the end of the file...
-    //   print("We are getting events right?");
-    //   fileData.replaceRange(i, value.data.length, value.data);
-    //   i += value.data.length;
-    //   yield (1.0 / 6487) * i;
-    //   if (i >= 6487) {
-    //     break;
-    //   }
-    // }
+    await for (final value in MidiCommand().onMidiDataReceived!) {
+      // Check that this is the end of the file...
+      fileData.setRange(i, i + value.data.length, value.data);
+      i += value.data.length;
+      yield (1.0 / fileSize) * i;
+      if (i >= fileSize) {
+        break;
+      }
+    }
     yield 1;
-    // MidiCommand().disconnectDevice(device);
+    MidiCommand().disconnectDevice(device);
 
-    List<int> realBytes = fileData.sublist(0, 6487);
+    List<int> realBytes = fileData.sublist(0, fileSize);
 
-    // var file = File("$location/preset.syx");
-    // file = await file.create();
-    // file = await file.writeAsBytes(realBytes);
+    var file = File("$location/preset.syx");
+    file = await file.create();
+    file = await file.writeAsBytes(realBytes);
   }
 
   Stream<double> uploadCab() async* {
@@ -181,7 +182,51 @@ class AxeController {
     MidiCommand().disconnectDevice(device);
   }
 
-  Stream<double> downloadCab() async* {}
+  Stream<double> downloadCab() async* {
+    var fileSize = (axeFXType == AxeFXType.original ? 10904 : 10905);
+
+    Uint8List fileData = Uint8List(15000);
+
+    // TODO: Likely needs changed for XL/XL+
+    Uint8List reqCommand = Uint8List(9);
+    reqCommand.setRange(0, 9, [
+      0xF0,
+      0x00,
+      0x01,
+      0x74,
+      0x03,
+      0x19,
+      0x00,
+      0x1F,
+      0xF7,
+    ]);
+    reqCommand[6] = number - 1;
+    reqCommand = recalcSysex(reqCommand);
+
+    await MidiCommand().connectToDevice(device);
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    MidiCommand().sendData(reqCommand);
+
+    var i = 0;
+    await for (final value in MidiCommand().onMidiDataReceived!) {
+      // Check that this is the end of the file...
+      fileData.setRange(i, i + value.data.length, value.data);
+      i += value.data.length;
+      yield (1.0 / fileSize) * i;
+      if (i >= fileSize) {
+        break;
+      }
+    }
+    yield 1;
+    MidiCommand().disconnectDevice(device);
+
+    List<int> realBytes = fileData.sublist(0, fileSize);
+
+    var file = File("$location/cabinet.syx");
+    file = await file.create();
+    file = await file.writeAsBytes(realBytes);
+  }
 
   //----- Utility -----//
   static void devChecker() async {
