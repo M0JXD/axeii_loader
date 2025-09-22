@@ -91,9 +91,7 @@ class AxeController {
   Stream<double> uploadPreset() async* {
     final dataPackets = axeFXType == AxeFXType.original ? 32 : 64;
     var fileToSend = (await File(location).readAsBytes());
-    await MidiCommand().connectToDevice(device);
-    await Future.delayed(const Duration(milliseconds: 200));
-
+    await connectToDevice(device);
 
     Uint8List startSysex = fileToSend.sublist(0, 12);
     startSysex = recalcSysex(startSysex);
@@ -117,7 +115,7 @@ class AxeController {
     MidiCommand().sendData(endSysex);
 
     yield 1.0;
-    MidiCommand().disconnectDevice(device);
+    // MidiCommand().disconnectDevice(device);
   }
 
   Stream<double> downloadPreset() async* {
@@ -126,9 +124,7 @@ class AxeController {
 
     Uint8List reqCommand = Uint8List(10);
     reqCommand = calcReqCommand(AxeFileType.preset, reqCommand);
-
-    await MidiCommand().connectToDevice(device);
-    await Future.delayed(const Duration(milliseconds: 200));
+    await connectToDevice(device);
 
     MidiCommand().sendData(reqCommand);
 
@@ -143,7 +139,7 @@ class AxeController {
       }
     }
     yield 1;
-    MidiCommand().disconnectDevice(device);
+    // MidiCommand().disconnectDevice(device);
 
     List<int> realBytes = fileData.sublist(0, fileSize);
 
@@ -155,8 +151,7 @@ class AxeController {
   Stream<double> uploadCab() async* {
     var fileToSend = (await File(location).readAsBytes());
     final dataStartAdd = fileUnit == AxeFXType.original ? 11 : 12;
-    await MidiCommand().connectToDevice(device);
-
+    await connectToDevice(device);
     // Uint8List startSysex = fileToSend.sublist(0, 12);
     Uint8List startSysex = Uint8List(11);
     startSysex = calcReqCommand(AxeFileType.ir, startSysex);
@@ -180,7 +175,7 @@ class AxeController {
     MidiCommand().sendData(endSysex);
     yield 1.0;
 
-    MidiCommand().disconnectDevice(device);
+    // MidiCommand().disconnectDevice(device);
   }
 
   Stream<double> downloadCab() async* {
@@ -203,8 +198,7 @@ class AxeController {
     reqCommand[6] = number - 1;
     reqCommand = recalcSysex(reqCommand);
 
-    await MidiCommand().connectToDevice(device);
-    await Future.delayed(const Duration(milliseconds: 200));
+    await connectToDevice(device);
 
     MidiCommand().sendData(reqCommand);
 
@@ -219,13 +213,22 @@ class AxeController {
       }
     }
     yield 1;
-    MidiCommand().disconnectDevice(device);
+    // MidiCommand().disconnectDevice(device);
 
     List<int> realBytes = fileData.sublist(0, fileSize);
 
     var file = File("$location/cabinet.syx");
     file = await file.create();
     file = await file.writeAsBytes(realBytes);
+  }
+
+  // Streams are not ready even if connectToDevice is awaited
+  // Also from the first send, stay connected.
+  Future<void> connectToDevice(MidiDevice device) async {
+    if (!device.connected) {
+      await MidiCommand().connectToDevice(device);
+      await Future.delayed(const Duration(milliseconds: 200));
+    }
   }
 
   //----- Utility -----//

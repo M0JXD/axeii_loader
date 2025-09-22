@@ -8,8 +8,26 @@ import 'package:axeii_loader/widgets/transfer_settings.dart';
 import '../model/model.dart';
 import '../model/midi_controller.dart';
 
-class AxeLoaderApp extends StatelessWidget {
+class AxeLoaderApp extends StatefulWidget {
   const AxeLoaderApp({super.key});
+
+  @override
+  State<AxeLoaderApp> createState() => _AxeLoaderAppState();
+}
+
+class _AxeLoaderAppState extends State<AxeLoaderApp> {
+
+  @override
+  void dispose() {
+
+    var dev = context.read<AxeLoaderViewModel>().selectedDevice;
+    if (dev != null) {
+      if (dev.connected) {
+        MidiCommand().disconnectDevice(dev);
+      }
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -222,6 +240,27 @@ class LocationChooser extends StatefulWidget {
 
 class _LocationChooserState extends State<LocationChooser> {
   bool buttonDisable = false;
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _controller = TextEditingController(
+      text: context.watch<AxeLoaderViewModel>().fileLocation,
+    );
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -233,9 +272,7 @@ class _LocationChooserState extends State<LocationChooser> {
           children: [
             Expanded(
               child: TextField(
-                controller: TextEditingController(
-                  text: context.watch<AxeLoaderViewModel>().fileLocation,
-                ),
+                controller: _controller,
                 onSubmitted: (newLocation) {
                   context.read<AxeLoaderViewModel>().fileLocation = newLocation;
                 },
@@ -282,7 +319,8 @@ class _LocationChooserState extends State<LocationChooser> {
                       }
                       setState(() {
                         buttonDisable = false;
-                        context.read<AxeLoaderViewModel>().transactionProgress = 0.0;
+                        context.read<AxeLoaderViewModel>().transactionProgress =
+                            0.0;
                       });
                     },
               child: const Text("Browse"),
