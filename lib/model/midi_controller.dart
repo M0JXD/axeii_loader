@@ -198,7 +198,6 @@ class AxeController {
     reqCommand = recalcSysex(reqCommand);
 
     await connectToDevice(device);
-
     MidiCommand().sendData(reqCommand);
 
     var i = 0;

@@ -202,13 +202,6 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
                 onSelected: (value) {
                   if (value != null) {
                     context.read<AxeLoaderViewModel>().selectedDevice = value;
-                    if (asyncSnapshot.data != null) {
-                      for (var dev in asyncSnapshot.data!) {
-                        if (dev.connected) {
-                          MidiCommand().disconnectDevice(dev);
-                        }
-                      }
-                    }
                   }
                 },
                 initialSelection: null,
