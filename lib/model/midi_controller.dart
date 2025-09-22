@@ -9,7 +9,6 @@ import 'package:flutter_midi_command/flutter_midi_command.dart';
 enum AxeFXType { original, xl, xlPlus }
 
 class AxeController {
-  static List<int> currentSysex = [];
   MidiDevice device;
   AxeFXType axeFXType;
   AxeFXType? fileUnit;
@@ -24,13 +23,13 @@ class AxeController {
     this.axeFXType = AxeFXType.original,
   });
 
+  //----- Methods -----//
   String getPresetName(Uint8List fileBytes) {
     // TODO: Save presets with their actual name
     //For presets I can see in the hex editor it's fairly easy to get the name.
     return 'preset.syx';
   }
 
-  //----- Methods -----//
   Uint8List recalcSysex(Uint8List sysex) {
     int checksumByte = 0xF0;
     switch (axeFXType) {
@@ -223,7 +222,7 @@ class AxeController {
   }
 
   // Streams are not ready even if connectToDevice is awaited
-  // Also from the first send, stay connected.
+  // Also from the first connect, stay connected as it upsets release mode
   Future<void> connectToDevice(MidiDevice device) async {
     if (!device.connected) {
       await MidiCommand().connectToDevice(device);

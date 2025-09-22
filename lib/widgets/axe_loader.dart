@@ -16,10 +16,8 @@ class AxeLoaderApp extends StatefulWidget {
 }
 
 class _AxeLoaderAppState extends State<AxeLoaderApp> {
-
   @override
   void dispose() {
-
     var dev = context.read<AxeLoaderViewModel>().selectedDevice;
     if (dev != null) {
       if (dev.connected) {
@@ -177,7 +175,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
                 label: "Axe-FX II XL+",
               ),
             ],
-            onSelected: (value) {
+            onSelected: (value) async {
               context.read<AxeLoaderViewModel>().axeFXType = value;
             },
             initialSelection: AxeFXType.original,
@@ -204,6 +202,13 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
                 onSelected: (value) {
                   if (value != null) {
                     context.read<AxeLoaderViewModel>().selectedDevice = value;
+                    if (asyncSnapshot.data != null) {
+                      for (var dev in asyncSnapshot.data!) {
+                        if (dev.connected) {
+                          MidiCommand().disconnectDevice(dev);
+                        }
+                      }
+                    }
                   }
                 },
                 initialSelection: null,
