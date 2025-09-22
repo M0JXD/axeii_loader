@@ -18,12 +18,12 @@ class TransferSettings extends StatelessWidget {
         type = context.watch<AxeLoaderViewModel>().fileType;
         switch (type) {
           case null:
-            information = Text("File type unknown.");
+            information = const Text("File type unknown.");
           case AxeFileType.ir:
-            information = Text("IR File Detected. Choose where to send to:");
-            controls = IRSettings();
+            information = const Text("IR File Detected. Choose where to send to:");
+            controls = const IRSettings();
           case AxeFileType.preset:
-            information = Text("Preset File Detected.");
+            information = const Text("Preset File Detected.");
             if (context.read<AxeLoaderViewModel>().sendReason.isNotEmpty) {
               information = Text(
                 "Preset File Detected.\n${context.read<AxeLoaderViewModel>().sendReason}",
@@ -31,14 +31,14 @@ class TransferSettings extends StatelessWidget {
             }
         }
       } else {
-        information = Text("Select what to receive and location:");
-        controls = GetterSettings();
+        information = const Text("Select what to receive and location:");
+        controls = const GetterSettings();
       }
     } else {
       if (mode == SendReceiveMode.send) {
-        information = Text("Select a file.");
+        information = const Text("Select a file.");
       } else {
-        information = Text("Choose a file directory.");
+        information = const Text("Choose a file directory.");
       }
     }
     return controls == null
@@ -80,9 +80,9 @@ class _GetterSettingsState extends State<GetterSettings> {
                 context.read<AxeLoaderViewModel>().receivePlace = value;
               });
             },
-            child: SizedBox(
+            child: const SizedBox(
               width: 170,
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   RadioListTile<AxeFileType>(
@@ -154,9 +154,9 @@ class _IRSettingsState extends State<IRSettings> {
             onChanged: (CabLocation? value) {
               setState(() => cabLocation = value!);
             },
-            child: SizedBox(
+            child: const SizedBox(
               width: 170,
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   RadioListTile<CabLocation>(

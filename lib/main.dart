@@ -11,7 +11,7 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => AxeLoaderViewModel(),
-      child: AxeLoaderApp(),
+      child: const AxeLoaderApp(),
     ),
   );
 }

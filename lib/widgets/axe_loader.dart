@@ -16,14 +16,14 @@ class AxeLoaderApp extends StatelessWidget {
     return MaterialApp(
       theme: FlexThemeData.light(
         scheme: FlexScheme.greys,
-        subThemesData: FlexSubThemesData(
+        subThemesData: const FlexSubThemesData(
           filledButtonRadius: 10,
           segmentedButtonRadius: 10,
         ),
       ),
       darkTheme: FlexThemeData.dark(
         scheme: FlexScheme.greys,
-        subThemesData: FlexSubThemesData(
+        subThemesData: const FlexSubThemesData(
           filledButtonRadius: 10,
           segmentedButtonRadius: 10,
         ),
@@ -31,15 +31,15 @@ class AxeLoaderApp extends StatelessWidget {
       title: "Axe FX II Loader",
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Axe-FX II Loader"),
-          actions: [
+          title: const Text("Axe-FX II Loader"),
+          actions: const [
             Padding(
-              padding: const EdgeInsets.only(right: 10),
+              padding: EdgeInsets.only(right: 10),
               child: SendReceiveActions(),
             ),
           ],
         ),
-        body: AxeLoaderBody(),
+        body: const AxeLoaderBody(),
       ),
       debugShowCheckedModeBanner: false,
     );
@@ -52,7 +52,7 @@ class AxeLoaderBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(10.0),
       child: Column(
         spacing: 10,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -63,8 +63,8 @@ class AxeLoaderBody extends StatelessWidget {
               spacing: 10,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ConnectionSettings(),
-                VerticalDivider(),
+                const ConnectionSettings(),
+                const VerticalDivider(),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,17 +79,17 @@ class AxeLoaderBody extends StatelessWidget {
                             ? "Select a file to send:"
                             : "Choose a location to save:",
                       ),
-                      Divider(),
+                      const Divider(),
                       // Spacer(),
-                      Expanded(child: Center(child: TransferSettings())),
+                      const Expanded(child: Center(child: TransferSettings())),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          Divider(),
-          ActionProgress(),
+          const Divider(),
+          const ActionProgress(),
         ],
       ),
     );
@@ -104,7 +104,7 @@ class SendReceiveActions extends StatelessWidget {
     return SizedBox(
       width: 250,
       child: SegmentedButton<SendReceiveMode>(
-        segments: [
+        segments: const [
           ButtonSegment<SendReceiveMode>(
             value: SendReceiveMode.send,
             label: Text("Send"),
@@ -148,7 +148,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
           DropdownMenu(
             width: 185,
             hintText: "Model",
-            dropdownMenuEntries: [
+            dropdownMenuEntries: const [
               DropdownMenuEntry(
                 value: AxeFXType.original,
                 label: "Axe-FX II OG/MkII",
@@ -180,7 +180,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
                             value: asyncSnapshot.data![index],
                           );
                         }
-                        return DropdownMenuEntry(value: null, label: "");
+                        return const DropdownMenuEntry(value: null, label: "");
                       },
                     ),
                 onSelected: (value) {
@@ -192,7 +192,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
               );
             },
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           SizedBox(
             width: 185,
             child: FilledButton(
@@ -203,7 +203,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
                   // AxeController.devChecker();
                 }); // Force to rebuild and get new device list
               },
-              child: Text("Reload Device List"),
+              child: const Text("Reload Device List"),
             ),
           ),
         ],
@@ -233,8 +233,8 @@ class LocationChooser extends StatelessWidget {
                 onSubmitted: (newLocation) {
                   context.read<AxeLoaderViewModel>().fileLocation = newLocation;
                 },
-                style: TextStyle(fontSize: 10),
-                decoration: InputDecoration(
+                style: const TextStyle(fontSize: 10),
+                decoration: const InputDecoration(
                   hintText: "Browse, or enter a path...",
                 ),
               ),
@@ -266,7 +266,7 @@ class LocationChooser extends StatelessWidget {
                   }
                 }
               },
-              child: Text("Browse"),
+              child: const Text("Browse"),
             ),
           ],
         ),
@@ -289,7 +289,7 @@ class ActionProgress extends StatelessWidget {
               : () async {
                   context.read<AxeLoaderViewModel>().beginTransfer();
                 },
-          child: Text("Begin"),
+          child: const Text("Begin"),
         ),
         Expanded(
           child: LinearProgressIndicator(
