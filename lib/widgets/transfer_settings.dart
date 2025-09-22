@@ -191,7 +191,7 @@ class _IRSettingsState extends State<IRSettings> {
                 : 4,
             minVal: 1,
             onQtyChanged: (value) {
-              if (cabLocation == CabLocation.user) {
+              if (cabLocation == CabLocation.scratchpad) {
                 // TODO: This likely needs changed for handling XL units
                 context.read<AxeLoaderViewModel>().number = (value + 100);
               } else {

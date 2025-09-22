@@ -91,14 +91,13 @@ class AxeController {
   Stream<double> uploadPreset() async* {
     final dataPackets = axeFXType == AxeFXType.original ? 32 : 64;
     var fileToSend = (await File(location).readAsBytes());
-    final fileBytes = fileToSend.length;
     await MidiCommand().connectToDevice(device);
 
     Uint8List startSysex = fileToSend.sublist(0, 12);
     startSysex = recalcSysex(startSysex);
     MidiCommand().sendData(startSysex);
     yield (1.0 / dataPackets + 2);
-    await Future.delayed(const Duration(milliseconds: 5));
+    await Future.delayed(const Duration(milliseconds: 10));
 
     for (var i = 0; i < dataPackets; i++) {
       Uint8List sysexToSend = fileToSend.sublist(
@@ -108,10 +107,10 @@ class AxeController {
       sysexToSend = recalcSysex(sysexToSend);
       MidiCommand().sendData(sysexToSend);
       yield (i + 1) / (dataPackets + 2);
-      await Future.delayed(const Duration(milliseconds: 5));
+      await Future.delayed(const Duration(milliseconds: 10));
     }
 
-    Uint8List endSysex = fileToSend.sublist(fileBytes - 11);
+    Uint8List endSysex = fileToSend.sublist(fileToSend.length - 11);
     endSysex = recalcSysex(endSysex);
     MidiCommand().sendData(endSysex);
 
@@ -161,7 +160,7 @@ class AxeController {
     startSysex = calcReqCommand(AxeFileType.ir, startSysex);
     MidiCommand().sendData(startSysex);
     yield (1.0 / 64 + 2);
-    await Future.delayed(const Duration(milliseconds: 5));
+    await Future.delayed(const Duration(milliseconds: 10));
 
     for (var i = 0; i < 64; i++) {
       Uint8List sysexToSend = fileToSend.sublist(
@@ -170,8 +169,8 @@ class AxeController {
       );
       sysexToSend = recalcSysex(sysexToSend);
       MidiCommand().sendData(sysexToSend);
+      await Future.delayed(const Duration(milliseconds: 10));
       yield (i + 1) / (64 + 2);
-      await Future.delayed(const Duration(milliseconds: 5));
     }
 
     Uint8List endSysex = fileToSend.sublist(fileToSend.length - 13);
