@@ -64,7 +64,7 @@ class AxeController {
     command[2] = 0x01;
     command[3] = 0x74;
 
-    // TODO: TODO: This likely needs changed for handling XL units
+    // TODO: This likely needs changed for handling XL units
     if (type == AxeFileType.ir) {
       command[5] = 0x7A; /* IR Dump Req ID */
       command[6] = number - 1;
@@ -186,7 +186,7 @@ class AxeController {
 
     Uint8List fileData = Uint8List(15000);
 
-    // TODO: TODO: This likely needs changed for handling XL units
+    // TODO: This likely needs changed for handling XL units
     Uint8List reqCommand = Uint8List(9);
     reqCommand.setRange(0, 9, [
       0xF0,
