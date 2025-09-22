@@ -120,15 +120,16 @@ class AxeController {
     reqCommand = calcReqCommand(AxeFileType.preset, reqCommand);
 
     await MidiCommand().connectToDevice(device);
-    MidiCommand().sendData(reqCommand);
-    await Future.delayed(const Duration(milliseconds: 5));
+    await Future.delayed(const Duration(milliseconds: 100));
 
-    var i = 0;
     var sub = MidiCommand().onMidiDataReceived?.listen((val) {
-      print("Does the listen method work?");
+      print("This never prints");
     });
 
-    sub?.resume();
+    await Future.delayed(const Duration(milliseconds: 5));
+    MidiCommand().sendData(reqCommand);
+
+    var i = 0;
     // await for (final value in MidiCommand().onMidiDataReceived!) {
     //   // Check that this is the end of the file...
     //   print("We are getting events right?");
@@ -140,13 +141,13 @@ class AxeController {
     //   }
     // }
     yield 1;
-    MidiCommand().disconnectDevice(device);
+    // MidiCommand().disconnectDevice(device);
 
     List<int> realBytes = fileData.sublist(0, 6487);
 
-    var file = File("$location/preset.syx");
-    file = await file.create();
-    file = await file.writeAsBytes(realBytes);
+    // var file = File("$location/preset.syx");
+    // file = await file.create();
+    // file = await file.writeAsBytes(realBytes);
   }
 
   Stream<double> uploadCab() async* {
