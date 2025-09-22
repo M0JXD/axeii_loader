@@ -212,16 +212,22 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
   }
 }
 
-class LocationChooser extends StatelessWidget {
+class LocationChooser extends StatefulWidget {
   final String locationType;
   const LocationChooser({super.key, required this.locationType});
 
+  @override
+  State<LocationChooser> createState() => _LocationChooserState();
+}
+
+class _LocationChooserState extends State<LocationChooser> {
+  bool buttonDisable = false;
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(locationType),
+        Text(widget.locationType),
         Row(
           spacing: 10,
           children: [
@@ -240,32 +246,43 @@ class LocationChooser extends StatelessWidget {
               ),
             ),
             FilledButton(
-              onPressed: () async {
-                if (context.mounted) {
-                  if (context.read<AxeLoaderViewModel>().sendReceiveMode ==
-                      SendReceiveMode.send) {
-                    // TODO: Somehow grey out the button to stop user opening multiple pickers
-                    FilePickerResult? result = await FilePicker.platform
-                        .pickFiles(
-                          allowedExtensions: ['syx'],
-                          type: FileType.custom,
-                          dialogTitle: "Choose file...",
-                        );
-                    if (result != null && context.mounted) {
-                      File file = File(result.files.single.path!);
-                      context.read<AxeLoaderViewModel>().fileLocation =
-                          file.path;
-                    }
-                  } else {
-                    String? selectedDirectory = await FilePicker.platform
-                        .getDirectoryPath(dialogTitle: "Choose Directory...");
-                    if (context.mounted && selectedDirectory != null) {
-                      context.read<AxeLoaderViewModel>().fileLocation =
-                          selectedDirectory;
-                    }
-                  }
-                }
-              },
+              onPressed: buttonDisable
+                  ? null
+                  : () async {
+                      if (context.mounted) {
+                        if (context
+                                .read<AxeLoaderViewModel>()
+                                .sendReceiveMode ==
+                            SendReceiveMode.send) {
+                          setState(() {
+                            buttonDisable = true;
+                          });
+                          FilePickerResult? result = await FilePicker.platform
+                              .pickFiles(
+                                allowedExtensions: ['syx'],
+                                type: FileType.custom,
+                                dialogTitle: "Choose file...",
+                              );
+                          setState(() {
+                            buttonDisable = false;
+                          });
+                          if (result != null && context.mounted) {
+                            File file = File(result.files.single.path!);
+                            context.read<AxeLoaderViewModel>().fileLocation =
+                                file.path;
+                          }
+                        } else {
+                          String? selectedDirectory = await FilePicker.platform
+                              .getDirectoryPath(
+                                dialogTitle: "Choose Directory...",
+                              );
+                          if (context.mounted && selectedDirectory != null) {
+                            context.read<AxeLoaderViewModel>().fileLocation =
+                                selectedDirectory;
+                          }
+                        }
+                      }
+                    },
               child: const Text("Browse"),
             ),
           ],
