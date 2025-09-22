@@ -10,9 +10,11 @@ NO WARRANTY IS PROVIDED, USE AT YOUR OWN RISK.
 Made as an alternative to Fractal-Bot to avoid needing to rely on Wine on Linux as it breaks on occasion.
 But should be possible to get working on all of Flutter's supported platforms.
 
+If the Axe-FX is sending MIDI clock pulses (which it will start doing after requesting the firmware version, e.g. via Fractal-Bot) this util will not work!
+
 Note: The refresh devices doesn't remove unplugged devices from the list (if you restart the app it will clear). However new devices appear, and replugged devices continue to work with the stubborn entry. This seems to be a limitation of the MIDI library and out of my hands 🙁
 
-For the terminal traditionalist, you might like the CLI version I made of this utility: 
+For the terminal traditionalist, you might like the CLI version I made of this utility: https://github.com/M0JXD/axeii_loader_cli
 
 ## Download
 
