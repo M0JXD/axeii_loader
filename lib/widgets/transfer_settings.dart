@@ -38,7 +38,7 @@ class TransferSettings extends StatelessWidget {
       if (mode == SendReceiveMode.send) {
         information = Text("Select a file.");
       } else {
-        information = Text("Choose a location.");
+        information = Text("Choose a file directory.");
       }
     }
     return controls == null
@@ -99,7 +99,7 @@ class _GetterSettingsState extends State<GetterSettings> {
               ),
             ),
           ),
-          InputQty(
+          InputQty.int(
             decoration: QtyDecorationProps(
               qtyStyle: QtyStyle.btnOnRight,
               btnColor: Theme.of(context).primaryColorDark,
@@ -120,6 +120,9 @@ class _GetterSettingsState extends State<GetterSettings> {
                 ? 100
                 : 500,
             minVal: fileType == AxeFileType.preset ? 0 : 1,
+            onQtyChanged: (value) {
+              context.read<AxeLoaderViewModel>().number = value;
+            },
           ),
         ],
       ),
@@ -168,7 +171,7 @@ class _IRSettingsState extends State<IRSettings> {
               ),
             ),
           ),
-          InputQty(
+          InputQty.int(
             decoration: QtyDecorationProps(
               qtyStyle: QtyStyle.btnOnRight,
               btnColor: Theme.of(context).primaryColorDark,
@@ -190,9 +193,9 @@ class _IRSettingsState extends State<IRSettings> {
             onQtyChanged: (value) {
               if (cabLocation == CabLocation.user) {
                 // TODO: This likely needs changed for handling XL units
-                context.read<AxeLoaderViewModel>().location = value.toInt() + 100;
+                context.read<AxeLoaderViewModel>().number = (value + 100);
               } else {
-                context.read<AxeLoaderViewModel>().location = value.toInt();
+                context.read<AxeLoaderViewModel>().number = value;
               }
             },
           ),

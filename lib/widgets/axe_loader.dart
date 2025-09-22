@@ -192,7 +192,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
               );
             },
           ),
-          SizedBox(height: 5,),
+          SizedBox(height: 5),
           SizedBox(
             width: 185,
             child: FilledButton(
@@ -244,6 +244,7 @@ class LocationChooser extends StatelessWidget {
                 if (context.mounted) {
                   if (context.read<AxeLoaderViewModel>().sendReceiveMode ==
                       SendReceiveMode.send) {
+                    // TODO: Somehow grey out the button to stop user opening multiple pickers
                     FilePickerResult? result = await FilePicker.platform
                         .pickFiles(
                           allowedExtensions: ['syx'],
