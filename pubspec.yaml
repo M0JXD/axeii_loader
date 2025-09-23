@@ -12,16 +12,9 @@ dependencies:
   provider: ^6.1.5+1
   window_manager: ^0.5.1
   file_picker: ^10.3.2
-  flutter_midi_command:
-    git:
-      url: https://github.com/InvisibleWrench/FlutterMidiCommand.git
+  flutter_midi_command: ^0.5.3
   input_quantity: ^2.5.0
   flex_color_scheme: ^8.3.0
-
-dependency_overrides: 
-  flutter_midi_command_linux:
-    git:
-      url: https://github.com/InvisibleWrench/flutter_midi_command_linux.git
 
 dev_dependencies:
   flutter_test:

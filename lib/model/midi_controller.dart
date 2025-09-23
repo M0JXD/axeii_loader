@@ -14,6 +14,7 @@ class AxeController {
   AxeFXType? fileUnit;
   String location;
   int number;
+  final MidiCommand _midiCommand = MidiCommand();
 
   AxeController({
     required this.device,
@@ -94,7 +95,7 @@ class AxeController {
 
     Uint8List startSysex = fileToSend.sublist(0, 12);
     startSysex = recalcSysex(startSysex);
-    MidiCommand().sendData(startSysex);
+    _midiCommand.sendData(startSysex);
     yield (1.0 / dataPackets + 2);
     await Future.delayed(const Duration(milliseconds: 10));
 
@@ -104,17 +105,17 @@ class AxeController {
         12 + (202 * (i + 1)),
       );
       sysexToSend = recalcSysex(sysexToSend);
-      MidiCommand().sendData(sysexToSend);
+      _midiCommand.sendData(sysexToSend);
       yield (i + 1) / (dataPackets + 2);
       await Future.delayed(const Duration(milliseconds: 10));
     }
 
     Uint8List endSysex = fileToSend.sublist(fileToSend.length - 11);
     endSysex = recalcSysex(endSysex);
-    MidiCommand().sendData(endSysex);
+    _midiCommand.sendData(endSysex);
 
     yield 1.0;
-    // MidiCommand().disconnectDevice(device);
+    _midiCommand.disconnectDevice(device);
   }
 
   Stream<double> downloadPreset() async* {
@@ -125,10 +126,10 @@ class AxeController {
     reqCommand = calcReqCommand(AxeFileType.preset, reqCommand);
     await connectToDevice(device);
 
-    MidiCommand().sendData(reqCommand);
+    _midiCommand.sendData(reqCommand);
 
     var i = 0;
-    await for (final value in MidiCommand().onMidiDataReceived!) {
+    await for (final value in _midiCommand.onMidiDataReceived!) {
       // Check that this is the end of the file...
       fileData.setRange(i, i + value.data.length, value.data);
       i += value.data.length;
@@ -138,7 +139,7 @@ class AxeController {
       }
     }
     yield 1;
-    // MidiCommand().disconnectDevice(device);
+    // _midiCommand.disconnectDevice(device);
 
     List<int> realBytes = fileData.sublist(0, fileSize);
 
@@ -154,7 +155,7 @@ class AxeController {
     // Uint8List startSysex = fileToSend.sublist(0, 12);
     Uint8List startSysex = Uint8List(11);
     startSysex = calcReqCommand(AxeFileType.ir, startSysex);
-    MidiCommand().sendData(startSysex);
+    _midiCommand.sendData(startSysex);
     yield (1.0 / 64 + 2);
     await Future.delayed(const Duration(milliseconds: 10));
 
@@ -164,17 +165,17 @@ class AxeController {
         dataStartAdd + (170 * (i + 1)),
       );
       sysexToSend = recalcSysex(sysexToSend);
-      MidiCommand().sendData(sysexToSend);
+      _midiCommand.sendData(sysexToSend);
       await Future.delayed(const Duration(milliseconds: 10));
       yield (i + 1) / (64 + 2);
     }
 
     Uint8List endSysex = fileToSend.sublist(fileToSend.length - 13);
     endSysex = recalcSysex(endSysex);
-    MidiCommand().sendData(endSysex);
+    _midiCommand.sendData(endSysex);
     yield 1.0;
 
-    // MidiCommand().disconnectDevice(device);
+    // _midiCommand.disconnectDevice(device);
   }
 
   Stream<double> downloadCab() async* {
@@ -198,10 +199,10 @@ class AxeController {
     reqCommand = recalcSysex(reqCommand);
 
     await connectToDevice(device);
-    MidiCommand().sendData(reqCommand);
+    _midiCommand.sendData(reqCommand);
 
     var i = 0;
-    await for (final value in MidiCommand().onMidiDataReceived!) {
+    await for (final value in _midiCommand.onMidiDataReceived!) {
       // Check that this is the end of the file...
       fileData.setRange(i, i + value.data.length, value.data);
       i += value.data.length;
@@ -211,7 +212,7 @@ class AxeController {
       }
     }
     yield 1;
-    // MidiCommand().disconnectDevice(device);
+    // _midiCommand.disconnectDevice(device);
 
     List<int> realBytes = fileData.sublist(0, fileSize);
 
@@ -224,7 +225,7 @@ class AxeController {
   // Also from the first connect, stay connected as it upsets release mode
   Future<void> connectToDevice(MidiDevice device) async {
     if (!device.connected) {
-      await MidiCommand().connectToDevice(device);
+      await _midiCommand.connectToDevice(device);
       await Future.delayed(const Duration(milliseconds: 200));
     }
   }
