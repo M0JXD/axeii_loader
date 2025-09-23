@@ -33,6 +33,7 @@ Future<void> setupWindow() async {
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
       await windowManager.focus();
+      await windowManager.setResizable(false);
     });
   }
 }
