@@ -17,7 +17,7 @@ Made as an alternative to Fractal-Bot to avoid needing to rely on Wine as it bre
 
 - The refresh devices doesn't remove unplugged devices from the list (if you restart the app it will clear). However new devices appear, and replugged devices continue to work with the stubborn entry. This seems to be a limitation of the MIDI library and out of my hands 🙁
 
-- There seem to be other bugs in the MIDI library I'm having to work around (although it may well be me just using it wrong) which might cause you issues if trying to use the receive mode after using the send mode, or trying to change devices. I've filled an issue with them so when they reply I'll see about making it more robust.
+- There are other bugs in the MIDI library I'm having to work around which might cause you issues if trying to use the receive mode after using the send mode, or are trying to change devices. I've filled an issue with them so when they reply I'll see about making it more robust. For now, if transfers stop working, restart the app.
 
 - For those disgusted by light mode, don't worry, it respects your system theme:
 
