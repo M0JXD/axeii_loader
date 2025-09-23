@@ -27,7 +27,7 @@ class AxeController {
   //----- Methods -----//
   String getPresetName(Uint8List fileBytes) {
     // TODO: Save presets with their actual name
-    //For presets I can see in the hex editor it's fairly easy to get the name.
+    // For presets I can see in the hex editor it's fairly easy to get the name.
     return 'preset.syx';
   }
 
@@ -88,6 +88,9 @@ class AxeController {
     return recalcSysex(command);
   }
 
+  // TODO: At this time I can't disconnect from the device for release builds. When it's fixed releasing will be better.
+  // See: https://github.com/InvisibleWrench/FlutterMidiCommand/issues/141
+
   Stream<double> uploadPreset() async* {
     final dataPackets = axeFXType == AxeFXType.original ? 32 : 64;
     var fileToSend = (await File(location).readAsBytes());
@@ -115,7 +118,7 @@ class AxeController {
     _midiCommand.sendData(endSysex);
 
     yield 1.0;
-    _midiCommand.disconnectDevice(device);
+    // _midiCommand.disconnectDevice(device);
   }
 
   Stream<double> downloadPreset() async* {

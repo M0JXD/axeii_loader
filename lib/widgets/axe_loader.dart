@@ -164,6 +164,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
           DropdownMenu(
             width: 200,
             hintText: "Model",
+            textStyle: const TextStyle(fontSize: 15),
             dropdownMenuEntries: const [
               DropdownMenuEntry(
                 value: AxeFXType.original,
@@ -186,6 +187,7 @@ class _ConnectionSettingsState extends State<ConnectionSettings> {
               return DropdownMenu(
                 width: 200,
                 hintText: "MIDI Device",
+                textStyle: const TextStyle(fontSize: 15),
                 dropdownMenuEntries:
                     List<DropdownMenuEntry<MidiDevice?>>.generate(
                       asyncSnapshot.data?.length ?? 0,
