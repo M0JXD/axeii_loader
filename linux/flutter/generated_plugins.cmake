@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  flutter_midi_command_linux
   screen_retriever_linux
   window_manager
 )

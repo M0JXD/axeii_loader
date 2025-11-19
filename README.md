@@ -1,3 +1,11 @@
+# DO NOT USE, AWAITING UPSTREAM FIXES IN PACAKGES
+
+At the moment the FlutterMidiCommand package used to do the midi interfacing will not even build on Linux with the latest Flutter.
+Please use [AXE II LOADER NATIVE](https://github.com/M0JXD/axeii_loader_native), which offers a CLI interface and a native GTK3 GUI, and uses ALSA directly.
+
+Once the package is fixed/maintained I will revisit this version (I'd like it to run on all of Flutter's platforms at some point, as FractalBot even had issues on Windows for me!).
+Original README below.
+
 # Axe-FX II Loader
 
 ![Light Mode](/assets/screenshot_light.png)
@@ -21,8 +29,6 @@ NO WARRANTY IS PROVIDED, USE AT YOUR OWN RISK.
 - For those disgusted by light mode, don't worry, it respects your system theme:
 
 ![Dark Mode](/assets/screenshot_dark.png)
-
-- For the terminal traditionalist, you might like the CLI version I made of this utility: https://github.com/M0JXD/axeii_loader_cli
 
 ## Download
 
