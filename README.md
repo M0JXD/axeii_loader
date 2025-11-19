@@ -1,4 +1,4 @@
-# DO NOT USE, AWAITING UPSTREAM FIXES IN PACAKGES
+# DO NOT USE, AWAITING UPSTREAM FIXES IN PACKAGES
 
 At the moment the FlutterMidiCommand package used to do the midi interfacing will not even build on Linux with the latest Flutter.
 Please use [AXE II LOADER NATIVE](https://github.com/M0JXD/axeii_loader_native), which offers a CLI interface and a native GTK3 GUI, and uses ALSA directly.
